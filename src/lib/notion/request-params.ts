@@ -6,6 +6,10 @@ export interface QueryDatabase {
   start_cursor?: string
 }
 
+export interface RetrieveDatabase {
+  database_id: string
+}
+
 export interface RetrieveBlock {
   block_id: string
 }
@@ -39,7 +43,7 @@ export interface CheckboxFilterCondition {
 export interface DateFilterCondition {
   equals?: string
   before?: string
-  after? :string
+  after?: string
   on_or_before?: string
   is_empty?: boolean
   is_not_empty?: boolean

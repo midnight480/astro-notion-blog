@@ -1,11 +1,20 @@
+export interface Database {
+  Title: string
+  Description: string
+  Icon: FileObject | Emoji | null
+  Cover: FileObject | null
+}
+
 export interface Post {
   PageId: string
   Title: string
+  Icon: FileObject | Emoji | null
+  Cover: FileObject | null
   Slug: string
   Date: string
   Tags: SelectProperty[]
   Excerpt: string
-  FeaturedImage: string | null
+  FeaturedImage: FileObject | null
   Rank: number
 }
 
@@ -22,6 +31,7 @@ export interface Block {
   NumberedListItem?: NumberedListItem
   ToDo?: ToDo
   Image?: Image
+  File?: File
   Code?: Code
   Quote?: Quote
   Equation?: Equation
@@ -35,6 +45,7 @@ export interface Block {
   Table?: Table
   ColumnList?: ColumnList
   TableOfContents?: TableOfContents
+  LinkToPage?: LinkToPage
 }
 
 export interface Paragraph {
@@ -86,7 +97,7 @@ export interface ToDo {
 export interface Image {
   Caption: RichText[]
   Type: string
-  File?: File
+  File?: FileObject
   External?: External
   Width?: number
   Height?: number
@@ -99,6 +110,14 @@ export interface Video {
 }
 
 export interface File {
+  Caption: RichText[]
+  Type: string
+  File?: FileObject
+  External?: External
+}
+
+export interface FileObject {
+  Type: string
   Url: string
   ExpiryTime?: string
 }
@@ -125,7 +144,7 @@ export interface Equation {
 
 export interface Callout {
   RichTexts: RichText[]
-  Icon: Icon
+  Icon: FileObject | Emoji | null
   Color: string
   Children?: Block[]
 }
@@ -208,7 +227,8 @@ export interface Text {
   Link?: Link
 }
 
-export interface Icon {
+export interface Emoji {
+  Type: string
   Emoji: string
 }
 
@@ -226,7 +246,12 @@ export interface Link {
 }
 
 export interface SelectProperty {
-  id: string;
-  name: string;
-  color: string;
+  id: string
+  name: string
+  color: string
+}
+
+export interface LinkToPage {
+  Type: string
+  PageId: string
 }

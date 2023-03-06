@@ -14,22 +14,34 @@ const { block, headings } = Astro.props
 const id = buildHeadingId(block.Heading3)
 ---
 
-{block.Heading3.IsToggleable ? (
+{
+  block.Heading3.IsToggleable ? (
     <details class="toggle">
       <summary>
         <a href={`#${id}`} id={id}>
-          <h6>{block.Heading3.RichTexts.map((richText: interfaces.RichText) => <RichText richText={richText} />)}</h6>
+          <h6>
+            {block.Heading3.RichTexts.map((richText: interfaces.RichText) => (
+              <RichText richText={richText} />
+            ))}
+          </h6>
         </a>
       </summary>
       <div>
-        <NotionBlocks blocks={block.Heading3.Children} headings={headings} />
+        {block.Heading3.Children && (
+          <NotionBlocks blocks={block.Heading3.Children} headings={headings} />
+        )}
       </div>
     </details>
   ) : (
     <a href={`#${id}`} id={id}>
-      <h6>{block.Heading3.RichTexts.map((richText: interfaces.RichText) => <RichText richText={richText} />)}</h6>
+      <h6>
+        {block.Heading3.RichTexts.map((richText: interfaces.RichText) => (
+          <RichText richText={richText} />
+        ))}
+      </h6>
     </a>
-  )}
+  )
+}
 
 <style>
   .toggle {
@@ -43,8 +55,7 @@ const id = buildHeadingId(block.Heading3)
     display: inline;
   }
 
-  .toggle > summary > a > h6
-  {
+  .toggle > summary > a > h6 {
     display: inline;
   }
 

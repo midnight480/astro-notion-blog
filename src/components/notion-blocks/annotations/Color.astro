@@ -10,4 +10,11 @@ export interface Props {
 const { richText } = Astro.props
 ---
 
-{richText.Annotation.Color && richText.Annotation.Color !== 'default' ? <span class={snakeToKebab(richText.Annotation.Color)}><slot /></span> : <slot />}
+{
+  /* prettier-ignore */
+  richText.Annotation.Color && richText.Annotation.Color !== 'default' ? (
+    <span class={snakeToKebab(richText.Annotation.Color)}><slot /></span>
+  ) : (
+    <slot />
+  )
+}
