@@ -382,6 +382,11 @@ export async function getDatabase(): Promise<Database> {
         Type: res.icon.type,
         Url: res.icon.external?.url || '',
       }
+    } else if (res.icon.type === 'file' && 'file' in res.icon) {
+      icon = {
+        Type: res.icon.type,
+        Url: res.icon.file?.url || '',
+      }
     }
   }
 
@@ -389,7 +394,7 @@ export async function getDatabase(): Promise<Database> {
   if (res.cover) {
     cover = {
       Type: res.cover.type,
-      Url: res.cover.external?.url || '',
+      Url: res.cover.external?.url || res.cover?.file?.url || '',
     }
   }
 
