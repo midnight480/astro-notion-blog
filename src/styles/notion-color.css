@@ -181,6 +181,19 @@ a {
   color: #222 !important;
 }
 
+/* Override global paragraph styles in dark mode with higher specificity */
+:global(html.dark) p,
+:global(html.dark) ul,
+:global(html.dark) ol {
+  color: #fff !important;
+}
+
+/* Ensure RichText content is also white in dark mode */
+:global(html.dark) .notion-block p,
+:global(html.dark) .notion-block span {
+  color: #fff !important;
+}
+
 :root.dark .code,
 html.dark .code,
 body.dark .code,
