@@ -15,26 +15,25 @@ function createMockRequest(url: string, method: string = 'GET'): Request {
  * モックCloudflare Pages Context作成
  */
 
-
 /**
  * リダイレクト処理のシミュレーション
  */
 async function simulateRedirectMiddleware(
-  request: Request, 
+  request: Request,
   env: CloudflareEnv
 ): Promise<Response> {
   const url = new URL(request.url)
   const customDomain = env.CUSTOM_DOMAIN || 'midnight480.com'
-  
+
   // Cloudflareの独自ドメインからのアクセスを検出
   if (url.hostname.includes('.pages.dev')) {
     const redirectUrl = new URL(request.url)
     redirectUrl.hostname = customDomain
     redirectUrl.protocol = 'https:'
-    
+
     return Response.redirect(redirectUrl.toString(), 301)
   }
-  
+
   return new Response('No redirect needed', { status: 200 })
 }
 
@@ -43,54 +42,60 @@ async function simulateRedirectMiddleware(
  */
 async function testBasicRedirectFunctionality() {
   console.log('🧪 リダイレクト基本機能テスト')
-  
+
   const testCases = [
     {
       name: 'Cloudflareドメインからのリダイレクト',
       url: 'https://astro-notion-blog-cq9.pages.dev/',
       expectedStatus: 301,
-      expectedLocation: 'https://midnight480.com/'
+      expectedLocation: 'https://midnight480.com/',
     },
     {
       name: 'パス付きリダイレクト',
       url: 'https://astro-notion-blog-cq9.pages.dev/posts/test',
       expectedStatus: 301,
-      expectedLocation: 'https://midnight480.com/posts/test'
+      expectedLocation: 'https://midnight480.com/posts/test',
     },
     {
       name: 'クエリパラメータ付きリダイレクト',
       url: 'https://astro-notion-blog-cq9.pages.dev/posts/test?utm_source=twitter',
       expectedStatus: 301,
-      expectedLocation: 'https://midnight480.com/posts/test?utm_source=twitter'
+      expectedLocation: 'https://midnight480.com/posts/test?utm_source=twitter',
     },
     {
       name: 'カスタムドメインは通常処理',
       url: 'https://midnight480.com/posts/test',
       expectedStatus: 200,
-      expectedLocation: null
-    }
+      expectedLocation: null,
+    },
   ]
-  
+
   for (const testCase of testCases) {
     const request = createMockRequest(testCase.url)
-    const response = await simulateRedirectMiddleware(request, { CUSTOM_DOMAIN: 'midnight480.com' })
-    
+    const response = await simulateRedirectMiddleware(request, {
+      CUSTOM_DOMAIN: 'midnight480.com',
+    })
+
     const statusMatch = response.status === testCase.expectedStatus
-    const locationMatch = testCase.expectedLocation 
+    const locationMatch = testCase.expectedLocation
       ? response.headers.get('location') === testCase.expectedLocation
       : true
-    
+
     const status = statusMatch && locationMatch ? '✅' : '❌'
     console.log(`  ${status} ${testCase.name}`)
-    
+
     if (!statusMatch) {
-      console.log(`      Status: ${response.status} (expected: ${testCase.expectedStatus})`)
+      console.log(
+        `      Status: ${response.status} (expected: ${testCase.expectedStatus})`
+      )
     }
     if (testCase.expectedLocation && !locationMatch) {
-      console.log(`      Location: ${response.headers.get('location')} (expected: ${testCase.expectedLocation})`)
+      console.log(
+        `      Location: ${response.headers.get('location')} (expected: ${testCase.expectedLocation})`
+      )
     }
   }
-  
+
   console.log('')
 }
 
@@ -99,41 +104,41 @@ async function testBasicRedirectFunctionality() {
  */
 function testUrlGenerationAndParameterPreservation() {
   console.log('🧪 URL生成とパラメータ保持テスト')
-  
+
   const testCases = [
     {
       original: 'https://astro-notion-blog-cq9.pages.dev/',
-      expected: 'https://midnight480.com/'
+      expected: 'https://midnight480.com/',
     },
     {
       original: 'https://astro-notion-blog-cq9.pages.dev/posts/test',
-      expected: 'https://midnight480.com/posts/test'
+      expected: 'https://midnight480.com/posts/test',
     },
     {
       original: 'https://astro-notion-blog-cq9.pages.dev/posts/test?a=1&b=2',
-      expected: 'https://midnight480.com/posts/test?a=1&b=2'
+      expected: 'https://midnight480.com/posts/test?a=1&b=2',
     },
     {
       original: 'https://astro-notion-blog-cq9.pages.dev/posts/test#section',
-      expected: 'https://midnight480.com/posts/test#section'
-    }
+      expected: 'https://midnight480.com/posts/test#section',
+    },
   ]
-  
+
   testCases.forEach(({ original, expected }) => {
     const redirectUrl = new URL(original)
     redirectUrl.hostname = 'midnight480.com'
     redirectUrl.protocol = 'https:'
-    
+
     const result = redirectUrl.toString()
     const status = result === expected ? '✅' : '❌'
-    
+
     console.log(`  ${status} ${original}`)
     console.log(`      -> ${result}`)
     if (result !== expected) {
       console.log(`      Expected: ${expected}`)
     }
   })
-  
+
   console.log('')
 }
 
@@ -142,7 +147,7 @@ function testUrlGenerationAndParameterPreservation() {
  */
 function testDomainDetectionLogic() {
   console.log('🧪 ドメイン判定ロジックテスト')
-  
+
   const testCases = [
     { hostname: 'astro-notion-blog-cq9.pages.dev', shouldRedirect: true },
     { hostname: 'my-site.pages.dev', shouldRedirect: true },
@@ -150,17 +155,19 @@ function testDomainDetectionLogic() {
     { hostname: 'midnight480.com', shouldRedirect: false },
     { hostname: 'www.midnight480.com', shouldRedirect: false },
     { hostname: 'example.com', shouldRedirect: false },
-    { hostname: 'subdomain.example.com', shouldRedirect: false }
+    { hostname: 'subdomain.example.com', shouldRedirect: false },
   ]
-  
+
   testCases.forEach(({ hostname, shouldRedirect }) => {
     const isPagesDev = hostname.includes('.pages.dev')
     const result = isPagesDev === shouldRedirect
     const status = result ? '✅' : '❌'
-    
-    console.log(`  ${status} ${hostname} -> Redirect: ${isPagesDev} (expected: ${shouldRedirect})`)
+
+    console.log(
+      `  ${status} ${hostname} -> Redirect: ${isPagesDev} (expected: ${shouldRedirect})`
+    )
   })
-  
+
   console.log('')
 }
 
@@ -169,27 +176,27 @@ function testDomainDetectionLogic() {
  */
 async function testErrorHandling() {
   console.log('🧪 エラーハンドリングテスト')
-  
+
   const testCases = [
     {
       name: '不正なURL',
       url: 'invalid-url',
-      shouldHandle: true
+      shouldHandle: true,
     },
     {
       name: '空の環境変数',
       url: 'https://astro-notion-blog-cq9.pages.dev/',
       env: {},
-      shouldHandle: true
+      shouldHandle: true,
     },
     {
       name: 'カスタムドメインが未設定',
       url: 'https://astro-notion-blog-cq9.pages.dev/',
       env: { CUSTOM_DOMAIN: '' },
-      shouldHandle: true
-    }
+      shouldHandle: true,
+    },
   ]
-  
+
   for (const testCase of testCases) {
     try {
       let request: Request
@@ -199,20 +206,20 @@ async function testErrorHandling() {
         console.log(`  ✅ ${testCase.name} - URL作成エラーを適切にキャッチ`)
         continue
       }
-      
+
       const response = await simulateRedirectMiddleware(
-        request, 
+        request,
         testCase.env || { CUSTOM_DOMAIN: 'midnight480.com' }
       )
-      
-      const status = response.status >= 200 && response.status < 400 ? '✅' : '❌'
+
+      const status =
+        response.status >= 200 && response.status < 400 ? '✅' : '❌'
       console.log(`  ${status} ${testCase.name} - Status: ${response.status}`)
-      
     } catch {
       console.log(`  ✅ ${testCase.name} - エラーを適切にキャッチ`)
     }
   }
-  
+
   console.log('')
 }
 
@@ -221,26 +228,30 @@ async function testErrorHandling() {
  */
 async function testPerformance() {
   console.log('🧪 パフォーマンステスト')
-  
+
   const testUrl = 'https://astro-notion-blog-cq9.pages.dev/posts/test'
   const iterations = 1000
-  
+
   const startTime = performance.now()
-  
+
   for (let i = 0; i < iterations; i++) {
     const request = createMockRequest(testUrl)
-    await simulateRedirectMiddleware(request, { CUSTOM_DOMAIN: 'midnight480.com' })
+    await simulateRedirectMiddleware(request, {
+      CUSTOM_DOMAIN: 'midnight480.com',
+    })
   }
-  
+
   const endTime = performance.now()
   const totalTime = endTime - startTime
   const avgTime = totalTime / iterations
-  
+
   console.log(`  ✅ ${iterations}回のリダイレクト処理`)
   console.log(`      総時間: ${totalTime.toFixed(2)}ms`)
   console.log(`      平均時間: ${avgTime.toFixed(4)}ms/request`)
-  console.log(`      スループット: ${(iterations / (totalTime / 1000)).toFixed(0)} requests/sec`)
-  
+  console.log(
+    `      スループット: ${(iterations / (totalTime / 1000)).toFixed(0)} requests/sec`
+  )
+
   console.log('')
 }
 
@@ -249,13 +260,13 @@ async function testPerformance() {
  */
 export async function runRedirectFunctionalityTests() {
   console.log('🚀 リダイレクト機能テストを開始...\n')
-  
+
   await testBasicRedirectFunctionality()
   testUrlGenerationAndParameterPreservation()
   testDomainDetectionLogic()
   await testErrorHandling()
   await testPerformance()
-  
+
   console.log('🎉 テスト完了！')
   console.log('\n📋 リダイレクト機能チェックリスト:')
   console.log('  ✅ 基本的なリダイレクト機能')

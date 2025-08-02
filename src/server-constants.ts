@@ -27,8 +27,10 @@ export const GISCUS_CATEGORY_ID =
 
 // Cloudflare Pages環境変数
 export const CF_PAGES = import.meta.env.CF_PAGES || process.env.CF_PAGES || ''
-export const CF_PAGES_URL = import.meta.env.CF_PAGES_URL || process.env.CF_PAGES_URL || ''
-export const CF_PAGES_BRANCH = import.meta.env.CF_PAGES_BRANCH || process.env.CF_PAGES_BRANCH || ''
+export const CF_PAGES_URL =
+  import.meta.env.CF_PAGES_URL || process.env.CF_PAGES_URL || ''
+export const CF_PAGES_BRANCH =
+  import.meta.env.CF_PAGES_BRANCH || process.env.CF_PAGES_BRANCH || ''
 
 // SEO関連の設定
 export const DEFAULT_CUSTOM_DOMAIN = 'midnight480.com'

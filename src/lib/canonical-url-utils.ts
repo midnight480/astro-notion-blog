@@ -15,21 +15,21 @@ export const DEFAULT_CANONICAL_CONFIG: CanonicalUrlConfig = {
   customDomain: CUSTOM_DOMAIN || 'midnight480.com',
   forceHttps: true,
   preserveQuery: false, // SEOのためクエリパラメータは除外
-  normalizeTrailingSlash: true
+  normalizeTrailingSlash: true,
 }
 
 /**
  * Canonical URLを生成
  */
 export function generateCanonicalUrl(
-  path: string, 
+  path: string,
   config: Partial<CanonicalUrlConfig> = {}
 ): string {
   const finalConfig = { ...DEFAULT_CANONICAL_CONFIG, ...config }
-  
+
   // パスの正規化
   let normalizedPath = path.startsWith('/') ? path : `/${path}`
-  
+
   // 末尾スラッシュの正規化
   if (finalConfig.normalizeTrailingSlash) {
     // ルートパス以外で末尾スラッシュを削除
@@ -37,10 +37,10 @@ export function generateCanonicalUrl(
       normalizedPath = normalizedPath.slice(0, -1)
     }
   }
-  
+
   // プロトコルの決定
   const protocol = finalConfig.forceHttps ? 'https:' : 'http:'
-  
+
   // Canonical URLの構築
   return `${protocol}//${finalConfig.customDomain}${normalizedPath}`
 }
@@ -48,7 +48,10 @@ export function generateCanonicalUrl(
 /**
  * 現在のURLがカスタムドメインかどうかを判定
  */
-export function isCustomDomain(hostname: string, customDomain?: string): boolean {
+export function isCustomDomain(
+  hostname: string,
+  customDomain?: string
+): boolean {
   const targetDomain = customDomain || DEFAULT_CANONICAL_CONFIG.customDomain
   return hostname === targetDomain || hostname === `www.${targetDomain}`
 }
@@ -63,8 +66,13 @@ export function isCloudflarePagesDomain(hostname: string): boolean {
 /**
  * SEO的に問題のあるドメインかどうかを判定
  */
-export function isProblematicDomain(hostname: string, customDomain?: string): boolean {
-  return isCloudflarePagesDomain(hostname) || !isCustomDomain(hostname, customDomain)
+export function isProblematicDomain(
+  hostname: string,
+  customDomain?: string
+): boolean {
+  return (
+    isCloudflarePagesDomain(hostname) || !isCustomDomain(hostname, customDomain)
+  )
 }
 
 /**
@@ -84,9 +92,11 @@ export function removeQueryParams(url: string): string {
  * パスの正規化（重複スラッシュの除去など）
  */
 export function normalizePath(path: string): string {
-  return path
-    .replace(/\/+/g, '/') // 重複スラッシュを単一に
-    .replace(/\/$/, '') || '/' // 末尾スラッシュを除去（ルート以外）
+  return (
+    path
+      .replace(/\/+/g, '/') // 重複スラッシュを単一に
+      .replace(/\/$/, '') || '/'
+  ) // 末尾スラッシュを除去（ルート以外）
 }
 
 /**
@@ -119,7 +129,10 @@ export function generateDebugInfo(
     canonicalUrl,
     config,
     isValid: validateCanonicalUrl(canonicalUrl),
-    isProblematic: isProblematicDomain(new URL(originalUrl).hostname, config.customDomain),
-    timestamp: new Date().toISOString()
+    isProblematic: isProblematicDomain(
+      new URL(originalUrl).hostname,
+      config.customDomain
+    ),
+    timestamp: new Date().toISOString(),
   }
 }

@@ -1,3 +1,9 @@
 dist/**/*
 tmp/**/*
 public/scripts/fslightbox.js
+
+# Ignore GitHub workflows, Kiro specs, VSCode settings, and markdown files
+.github/**/*
+.kiro/**/*
+.vscode/**/*
+*.md

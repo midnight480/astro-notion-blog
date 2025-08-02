@@ -7,29 +7,29 @@ export interface EnvironmentVariables {
   // Notion関連
   NOTION_API_SECRET: string
   DATABASE_ID: string
-  
+
   // サイト設定
   CUSTOM_DOMAIN: string
   BASE_PATH: string
-  
+
   // Cloudflare Pages関連
   CF_PAGES?: string
   CF_PAGES_URL?: string
   CF_PAGES_BRANCH?: string
-  
+
   // Analytics
   PUBLIC_GA_TRACKING_ID?: string
-  
+
   // 機能フラグ
   ENABLE_LIGHTBOX?: string
   PUBLIC_ENABLE_COMMENTS?: string
-  
+
   // Giscus設定
   PUBLIC_GISCUS_REPO?: string
   PUBLIC_GISCUS_REPO_ID?: string
   PUBLIC_GISCUS_CATEGORY?: string
   PUBLIC_GISCUS_CATEGORY_ID?: string
-  
+
   // その他
   REQUEST_TIMEOUT_MS?: string
 }

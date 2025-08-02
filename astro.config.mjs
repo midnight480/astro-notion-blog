@@ -23,7 +23,9 @@ const getSite = function () {
 
     return new URL(
       BASE_PATH,
-      `https://${new URL(process.env.CF_PAGES_URL || 'https://midnight480.com').host
+      `https://${new URL(
+        process.env.CF_PAGES_URL || 'https://midnight480.com'
+      ).host
         .split('.')
         .slice(1)
         .join('.')}`
