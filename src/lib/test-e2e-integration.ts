@@ -83,7 +83,7 @@ async function runComprehensiveSeoValidationTest() {
   console.log(`  総推奨事項数: ${validationResult.summary.totalRecommendations}`)
   
   // 詳細レポートの生成
-  const report = generateSeoValidationReport(validationResult)
+  generateSeoValidationReport(validationResult)
   console.log('\n📄 詳細レポートが生成されました')
   
   // スコアに基づく評価
@@ -107,7 +107,7 @@ async function runPerformanceTests() {
   console.log('🧪 パフォーマンステスト')
   
   const iterations = 100
-  const testUrl = 'https://astro-notion-blog-cq9.pages.dev/posts/test'
+
   
   // Canonical URL生成のパフォーマンス
   const canonicalStartTime = performance.now()
@@ -147,7 +147,7 @@ function runMemoryTests() {
     `https://astro-notion-blog-cq9.pages.dev/posts/test-${i}`
   )
   
-  const validationResult = runComprehensiveSeoValidation(urls)
+  runComprehensiveSeoValidation(urls)
   
   const finalMemory = process.memoryUsage()
   const memoryDiff = {
@@ -173,8 +173,8 @@ async function runErrorResilienceTests() {
   const errorTestCases = [
     { name: '不正なURL', url: 'invalid-url' },
     { name: '空文字列', url: '' },
-    { name: 'null値', url: null as any },
-    { name: 'undefined値', url: undefined as any },
+    { name: 'null値', url: null as unknown as string },
+    { name: 'undefined値', url: undefined as unknown as string },
     { name: '非常に長いURL', url: 'https://example.com/' + 'a'.repeat(10000) }
   ]
   
@@ -182,7 +182,7 @@ async function runErrorResilienceTests() {
   
   for (const testCase of errorTestCases) {
     try {
-      const validationResult = runComprehensiveSeoValidation([testCase.url])
+      runComprehensiveSeoValidation([testCase.url])
       console.log(`  ✅ ${testCase.name} - エラーハンドリング成功`)
       passedTests++
     } catch (error) {

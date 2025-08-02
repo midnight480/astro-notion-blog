@@ -100,7 +100,11 @@ export interface DebugInfo {
 
 // Astro.env の型拡張
 declare global {
-  namespace ImportMeta {
-    interface Env extends EnvironmentVariables {}
+  interface ImportMetaEnv extends EnvironmentVariables {
+    // 追加のプロパティがある場合はここに定義
+    readonly MODE: string
+    readonly PROD: boolean
+    readonly DEV: boolean
+    readonly SSR: boolean
   }
 }

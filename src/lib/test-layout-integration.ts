@@ -66,7 +66,7 @@ function testSeoMetaConsistency() {
     }
   ]
   
-  testCases.forEach(({ title, description, path, isArticle }) => {
+  testCases.forEach(({ title, path, isArticle }) => {
     const canonicalUrl = generateCanonicalUrl(path)
     
     console.log(`  Test Case: ${title}`)
