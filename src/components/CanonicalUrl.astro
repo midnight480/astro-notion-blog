@@ -1,0 +1,44 @@
+---
+/**
+ * Enhanced Canonical URL Component
+ * 常にカスタムドメインを指すcanonical URLを生成
+ * アクセス元ドメインに関係なく、SEOの重複コンテンツ問題を解決
+ */
+
+import { CUSTOM_DOMAIN } from '../server-constants'
+
+export interface Props {
+  path: string
+  customDomain?: string
+}
+
+const { path, customDomain } = Astro.props
+
+// カスタムドメインの決定（優先順位: props > 環境変数 > デフォルト）
+const resolvedCustomDomain = customDomain || CUSTOM_DOMAIN || 'midnight480.com'
+
+// パスの正規化（先頭に/がない場合は追加）
+const normalizedPath = path.startsWith('/') ? path : `/${path}`
+
+// Canonical URLの生成（常にhttpsを使用）
+const canonicalUrl = `https://${resolvedCustomDomain}${normalizedPath}`
+
+// デバッグ情報（開発環境でのみ出力）
+if (import.meta.env.DEV) {
+  console.log(`Canonical URL generated: ${canonicalUrl}`)
+  console.log(`  - Custom Domain: ${resolvedCustomDomain}`)
+  console.log(`  - Path: ${normalizedPath}`)
+  console.log(`  - Current Host: ${Astro.url.hostname}`)
+}
+---
+
+<!-- Canonical URL -->
+<link rel="canonical" href={canonicalUrl} />
+
+<!-- Additional SEO signals -->
+<meta name="alternate" content={canonicalUrl} />
+
+<!-- Preconnect to canonical domain (performance optimization) -->
+{resolvedCustomDomain !== Astro.url.hostname && (
+  <link rel="preconnect" href={`https://${resolvedCustomDomain}`} />
+)}

@@ -1,0 +1,65 @@
+---
+/**
+ * Enhanced SEO Meta Tags Component
+ * Open GraphやTwitterカードのURLを常にカスタムドメインに統一
+ */
+
+import { CUSTOM_DOMAIN } from '../server-constants'
+
+export interface Props {
+  title: string
+  description: string
+  path: string
+  ogImage?: string
+  customDomain?: string
+  isArticle?: boolean
+}
+
+const { 
+  title, 
+  description, 
+  path, 
+  ogImage, 
+  customDomain,
+  isArticle = false 
+} = Astro.props
+
+// カスタムドメインの決定
+const resolvedCustomDomain = customDomain || CUSTOM_DOMAIN || 'midnight480.com'
+
+// パスの正規化
+const normalizedPath = path.startsWith('/') ? path : `/${path}`
+
+// Canonical URLの生成
+const canonicalUrl = `https://${resolvedCustomDomain}${normalizedPath}`
+
+// デフォルトOG画像
+const defaultOgImage = `https://${resolvedCustomDomain}/default-og-image.png`
+const finalOgImage = ogImage || defaultOgImage
+---
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content={isArticle ? 'article' : 'website'} />
+<meta property="og:url" content={canonicalUrl} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={finalOgImage} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:locale" content="ja_JP" />
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content="@midnight480" />
+<meta name="twitter:creator" content="@midnight480" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={finalOgImage} />
+
+<!-- Additional SEO Meta Tags -->
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+<meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+<meta name="bingbot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+
+<!-- Domain verification (if needed) -->
+<meta name="domain-verify" content={resolvedCustomDomain} />
