@@ -1,0 +1,21 @@
+name = "astro-notion-blog"
+compatibility_date = "2024-01-01"
+pages_build_output_dir = "dist"
+
+# 本番環境設定
+[env.production]
+vars = { ENVIRONMENT = "production", BASE_PATH = "/", CACHE_CONCURRENCY = "4" }
+
+# プレビュー環境設定  
+[env.preview]
+vars = { ENVIRONMENT = "preview", BASE_PATH = "/", CACHE_CONCURRENCY = "4" }
+
+# 非機密の環境変数
+[vars]
+BASE_PATH = "/"
+CACHE_CONCURRENCY = "4"
+
+# 機密情報は wrangler pages secret put コマンドで設定
+# wrangler pages secret put NOTION_API_SECRET --env preview
+# wrangler pages secret put DATABASE_ID --env preview
+# wrangler pages secret put CUSTOM_DOMAIN --env preview

@@ -1,0 +1,152 @@
+name: Deploy to Cloudflare Workers
+
+on:
+  push:
+    branches: [main, feature/page-to-workers]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  validate-environment:
+    runs-on: ubuntu-latest
+    environment: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Validate Environment Variables
+        run: npm run env:validate
+        env:
+          NOTION_API_SECRET: ${{ secrets.NOTION_API_SECRET }}
+          DATABASE_ID: ${{ secrets.DATABASE_ID }}
+          NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+          CUSTOM_DOMAIN: ${{ secrets.CUSTOM_DOMAIN }}
+
+  build-and-test:
+    needs: validate-environment
+    runs-on: ubuntu-latest
+    environment: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Setup NX Cloud
+        run: |
+          if [ -n "${{ secrets.NX_CLOUD_ACCESS_TOKEN }}" ]; then
+            echo "Setting up NX Cloud..."
+            npx nx g @nrwl/nx-cloud:init --yes
+          else
+            echo "⚠️ NX_CLOUD_ACCESS_TOKEN not set, skipping NX Cloud setup"
+          fi
+        env:
+          NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+      
+      - name: Build with cache
+        run: |
+          if [ -n "${{ secrets.NX_CLOUD_ACCESS_TOKEN }}" ]; then
+            echo "Building with NX Cloud cache..."
+            npm run build:cached
+          else
+            echo "Building without cache..."
+            npm run build
+          fi
+        env:
+          NOTION_API_SECRET: ${{ secrets.NOTION_API_SECRET }}
+          DATABASE_ID: ${{ secrets.DATABASE_ID }}
+          CUSTOM_DOMAIN: ${{ secrets.CUSTOM_DOMAIN }}
+          ASTRO_NOTION_BLOG_FACEBOOK_URL: ${{ secrets.ASTRO_NOTION_BLOG_FACEBOOK_URL }}
+          ASTRO_NOTION_BLOG_INSTAGRAM_URL: ${{ secrets.ASTRO_NOTION_BLOG_INSTAGRAM_URL }}
+          ASTRO_NOTION_BLOG_LINKEDIN_URL: ${{ secrets.ASTRO_NOTION_BLOG_LINKEDIN_URL }}
+          ASTRO_NOTION_BLOG_OTHER_URL: ${{ secrets.ASTRO_NOTION_BLOG_OTHER_URL }}
+          ASTRO_NOTION_BLOG_USERNAME: ${{ secrets.ASTRO_NOTION_BLOG_USERNAME }}
+          ASTRO_NOTION_BLOG_X_URL: ${{ secrets.ASTRO_NOTION_BLOG_X_URL }}
+          ENABLE_LIGHTBOX: ${{ secrets.ENABLE_LIGHTBOX }}
+          NODE_VERSION: ${{ secrets.NODE_VERSION }}
+          NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+          PUBLIC_ENABLE_COMMENTS: ${{ secrets.PUBLIC_ENABLE_COMMENTS }}
+          PUBLIC_GA_TRACKING_ID: ${{ secrets.PUBLIC_GA_TRACKING_ID }}
+          PUBLIC_GISCUS_REPO: ${{ secrets.PUBLIC_GISCUS_REPO }}
+          PUBLIC_GISCUS_REPO_ID: ${{ secrets.PUBLIC_GISCUS_REPO_ID }}
+          PUBLIC_GISCUS_CATEGORY: ${{ secrets.PUBLIC_GISCUS_CATEGORY }}
+          PUBLIC_GISCUS_CATEGORY_ID: ${{ secrets.PUBLIC_GISCUS_CATEGORY_ID }}
+      
+      - name: Run tests
+        run: npm run test:all
+        env:
+          NOTION_API_SECRET: ${{ secrets.NOTION_API_SECRET }}
+          DATABASE_ID: ${{ secrets.DATABASE_ID }}
+          CUSTOM_DOMAIN: ${{ secrets.CUSTOM_DOMAIN }}
+      
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-${{ github.sha }}
+          path: dist/
+          retention-days: 1
+
+  deploy-staging:
+    if: github.ref == 'refs/heads/feature/page-to-workers'
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-${{ github.sha }}
+          path: dist/
+      
+      - name: Deploy to Cloudflare Workers (Staging)
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+          command: pages deploy dist --project-name=astro-notion-blog-staging --env staging
+
+  deploy-production:
+    if: github.ref == 'refs/heads/main'
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-${{ github.sha }}
+          path: dist/
+      
+      - name: Deploy to Cloudflare Workers (Production)
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+          command: pages deploy dist --project-name=astro-notion-blog --env production

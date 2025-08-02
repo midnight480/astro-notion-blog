@@ -15,6 +15,22 @@ const getSite = function () {
     return new URL(BASE_PATH, `https://${process.env.VERCEL_URL}`).toString();
   }
 
+  // Cloudflare Workers環境の検出
+  if (process.env.CF_WORKERS || process.env.CLOUDFLARE_ACCOUNT_ID) {
+    if (process.env.CF_PAGES_BRANCH && process.env.CF_PAGES_BRANCH !== 'main') {
+      return new URL(BASE_PATH, process.env.CF_PAGES_URL).toString();
+    }
+
+    return new URL(
+      BASE_PATH,
+      `https://${new URL(process.env.CF_PAGES_URL || 'https://midnight480.com').host
+        .split('.')
+        .slice(1)
+        .join('.')}`
+    ).toString();
+  }
+
+  // 従来のCloudflare Pages環境（後方互換性のため残す）
   if (process.env.CF_PAGES) {
     if (process.env.CF_PAGES_BRANCH !== 'main') {
       return new URL(BASE_PATH, process.env.CF_PAGES_URL).toString();

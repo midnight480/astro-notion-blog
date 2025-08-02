@@ -30,7 +30,14 @@
     "test:seo-validation": "npx tsx src/lib/seo-validation-tools.ts",
     "test:e2e": "npx tsx src/lib/test-e2e-integration.ts",
     "test:seo": "npm run test:middleware && npm run test:robots && npm run test:canonical && npm run test:layout",
-    "test:all": "npm run test:seo && npm run test:redirect && npm run test:e2e"
+    "test:all": "npm run test:seo && npm run test:redirect && npm run test:e2e",
+    "env:validate": "npx tsx scripts/validate-env.ts validate",
+    "env:status": "npx tsx scripts/validate-env.ts status",
+    "test:workers-middleware": "npx tsx scripts/test-workers-middleware.ts",
+    "workers:dev": "wrangler pages dev dist --port 4321",
+    "workers:deploy": "wrangler pages deploy dist",
+    "workers:deploy:staging": "wrangler pages deploy dist --branch preview",
+    "workers:deploy:production": "wrangler pages deploy dist --branch main"
   },
   "dependencies": {
     "@astrojs/react": "^4.2.7",
@@ -42,6 +49,7 @@
     "astro-icon": "^1.1.5",
     "async-retry": "^1.3.3",
     "axios": "^1.7.9",
+    "dotenv": "^17.2.1",
     "exif-be-gone": "^1.5.1",
     "katex": "^0.16.21",
     "mermaid": "^11.5.0",
@@ -55,8 +63,10 @@
     "sharp": "^0.33.5"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^4.20241218.0",
     "@nrwl/nx-cloud": "^19.1.0",
     "@types/async-retry": "^1.4.9",
+    "@types/dotenv": "^6.1.1",
     "@types/js-base64": "^3.3.1",
     "@types/katex": "^0.16.7",
     "@types/metascraper": "^5.14.3",
@@ -70,7 +80,8 @@
     "cli-progress": "^3.12.0",
     "eslint": "^9.17.0",
     "eslint-plugin-astro": "^1.3.1",
-    "nx": "20.8.2"
+    "nx": "20.8.2",
+    "wrangler": "^3.95.0"
   },
   "nx": {
     "targets": {
