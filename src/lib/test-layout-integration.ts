@@ -66,7 +66,7 @@ function testSeoMetaConsistency() {
     }
   ]
   
-  testCases.forEach(({ title, description, path, isArticle }) => {
+  testCases.forEach(({ title, path, isArticle }) => {
     const canonicalUrl = generateCanonicalUrl(path)
     
     console.log(`  Test Case: ${title}`)
@@ -111,13 +111,13 @@ function testDomainConsistency() {
 function testPerformanceOptimizations() {
   console.log('🧪 パフォーマンス最適化検証テスト')
   
-  const currentDomain = 'astro-notion-blog-cq9.pages.dev'
-  const customDomain = 'midnight480.com'
+  const currentDomain: string = 'astro-notion-blog-cq9.pages.dev'
+  const customDomain: string = 'midnight480.com'
   
   console.log('  Preconnect最適化:')
   console.log(`    Current Domain: ${currentDomain}`)
   console.log(`    Custom Domain: ${customDomain}`)
-  console.log(`    Should Preconnect: ${currentDomain !== customDomain ? '✅ Yes' : '❌ No'}`)
+  console.log(`    Should Preconnect: ${currentDomain === customDomain ? '❌ No' : '✅ Yes'}`)
   
   console.log('  キャッシュ最適化:')
   console.log('    ✅ Canonical URL components are cacheable')
