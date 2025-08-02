@@ -2,7 +2,7 @@
  * リダイレクト機能の包括的テストスイート
  */
 
-import type { CloudflareEnv, RedirectConfig } from '../types/environment'
+import type { CloudflareEnv } from '../types/environment'
 
 /**
  * モックRequest作成
@@ -11,19 +11,7 @@ function createMockRequest(url: string, method: string = 'GET'): Request {
   return new Request(url, { method })
 }
 
-/**
- * モックCloudflare Pages Context作成
- */
-function createMockContext(request: Request, env: CloudflareEnv = {}) {
-  return {
-    request,
-    env,
-    params: {},
-    data: {},
-    next: async () => new Response('Original response', { status: 200 }),
-    waitUntil: (promise: Promise<any>) => {}
-  }
-}
+
 
 /**
  * リダイレクト処理のシミュレーション
@@ -129,7 +117,6 @@ function testUrlGenerationAndParameterPreservation() {
   ]
   
   testCases.forEach(({ original, expected }) => {
-    const originalUrl = new URL(original)
     const redirectUrl = new URL(original)
     redirectUrl.hostname = 'midnight480.com'
     redirectUrl.protocol = 'https:'
@@ -205,7 +192,7 @@ async function testErrorHandling() {
       let request: Request
       try {
         request = createMockRequest(testCase.url)
-      } catch (error) {
+      } catch {
         console.log(`  ✅ ${testCase.name} - URL作成エラーを適切にキャッチ`)
         continue
       }
@@ -218,8 +205,8 @@ async function testErrorHandling() {
       const status = response.status >= 200 && response.status < 400 ? '✅' : '❌'
       console.log(`  ${status} ${testCase.name} - Status: ${response.status}`)
       
-    } catch (error) {
-      console.log(`  ✅ ${testCase.name} - エラーを適切にキャッチ: ${error}`)
+    } catch {
+      console.log(`  ✅ ${testCase.name} - エラーを適切にキャッチ`)
     }
   }
   

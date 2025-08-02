@@ -47,7 +47,6 @@ export function validateCanonicalUrlAccuracy(
   const recommendations: string[] = []
   
   try {
-    const url = new URL(pageUrl)
     const canonicalUrl = generateCanonicalUrl(expectedPath)
     const isValid = validateCanonicalUrl(canonicalUrl)
     
