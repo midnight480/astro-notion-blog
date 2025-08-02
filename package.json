@@ -19,6 +19,7 @@
     "astro": "astro",
     "lint": "ESLINT_USE_FLAT_CONFIG=false eslint --ext .js,.ts,.astro src",
     "format": "npx prettier --write .",
+    "format:check": "npx prettier --check .",
     "cache:fetch": "node scripts/blog-contents-cache.cjs",
     "cache:purge": "nx reset && rm -f tmp/*",
     "_fetch-notion-blocks": "node scripts/retrieve-block-children.cjs",

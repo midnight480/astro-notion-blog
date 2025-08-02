@@ -96,6 +96,40 @@ npm run dev
 3. Open [http://localhost:4321](http://localhost:4321) in your browser
 4. Press `Ctrl+C` in the terminal to stop
 
+### Code Quality & CI/CD
+
+This project uses a unified CI/CD workflow that automatically checks code quality:
+
+#### Manual Commands for Developers
+
+Before committing your changes, run these commands to ensure code quality:
+
+```sh
+# Format your code
+npm run format
+
+# Check formatting (without fixing)
+npm run format:check
+
+# Run linting
+npm run lint
+
+# Run all tests
+npm run test:all
+```
+
+#### Automated Workflow
+
+The `deploy-workers.yml` workflow automatically:
+1. Validates environment variables
+2. Runs lint checks (`npm run lint`)
+3. Runs format checks (`npm run format:check`)
+4. Builds the application
+5. Runs all tests
+6. Deploys to Cloudflare Workers (staging/production)
+
+If any step fails, the deployment is automatically cancelled.
+
 ### For more information
 
 See [wiki](https://github.com/otoyo/astro-notion-blog/wiki).

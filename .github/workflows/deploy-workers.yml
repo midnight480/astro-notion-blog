@@ -54,6 +54,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
       
+      - name: Run lint check
+        run: npm run lint
+      
+      - name: Run format check
+        run: npm run format:check
+      
       - name: Setup NX Cloud
         run: |
           if [ -n "${{ secrets.NX_CLOUD_ACCESS_TOKEN }}" ]; then
