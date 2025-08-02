@@ -10,6 +10,9 @@ import SearchButton from '../components/SearchButton.astro'
 import ThemeToggle from '../components/ThemeToggle.astro'
 import Profile from '../components/Profile.astro'
 import StructuredData from '../components/StructuredData.astro'
+import CanonicalUrl from '../components/CanonicalUrl.astro'
+import SeoMetaTags from '../components/SeoMetaTags.astro'
+import { generateCanonicalUrl } from '../lib/canonical-url-utils'
 import type { Post } from '../lib/interfaces.ts'
 
 export interface Props {
@@ -26,11 +29,14 @@ const database = await getDatabase()
 
 const siteTitle = title ? `${title} - ${database.Title}` : database.Title
 const siteDescription = description ? description : database.Description
-const siteURL = new URL(getNavLink(path), Astro.site).toString()
-const siteOGImage = new URL(
-  getStaticFilePath('/default-og-image.png'),
-  Astro.site
-)
+
+// Enhanced URL generation - always use custom domain for canonical URLs
+const canonicalURL = generateCanonicalUrl(path)
+const siteURL = canonicalURL // Use canonical URL for consistency
+
+// Generate OG image URL using custom domain
+const customDomain = 'midnight480.com'
+const siteOGImage = `https://${customDomain}${getStaticFilePath('/default-og-image.png')}`
 
 let coverImageURL: string
 if (database.Cover) {
@@ -60,11 +66,7 @@ if (database.Icon && database.Icon.Type === 'file') {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
-    <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
-    <meta name="bingbot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
-    
-    <!-- AI Bot restrictions -->
+    <!-- AI Bot restrictions (additional to SeoMetaTags) -->
     <meta name="robots" content="noai, noimageai" />
     <meta name="GPTBot" content="noindex, nofollow" />
     <meta name="ChatGPT-User" content="noindex, nofollow" />
@@ -78,27 +80,20 @@ if (database.Icon && database.Icon.Type === 'file') {
     <meta name="author" content="midnight480" />
     <meta name="keywords" content="AWS, クラウド, サーバレス, 技術ブログ, エンジニア, midnight480" />
     
-    <!-- Canonical URL -->
-    <link rel="canonical" href={siteURL} />
+    <!-- Enhanced Canonical URL -->
+    <CanonicalUrl path={path} />
     
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content={path === '/' ? 'website' : 'article'} />
-    <meta property="og:url" content={siteURL} />
-    <meta property="og:title" content={siteTitle} />
-    <meta property="og:description" content={siteDescription} />
+    <!-- Enhanced SEO Meta Tags -->
+    <SeoMetaTags 
+      title={siteTitle}
+      description={siteDescription}
+      path={path}
+      ogImage={ogImage || siteOGImage}
+      isArticle={path !== '/'}
+    />
+    
+    <!-- Site-specific Open Graph -->
     <meta property="og:site_name" content={database.Title} />
-    <meta property="og:image" content={ogImage || siteOGImage} />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta property="og:locale" content="ja_JP" />
-    
-    <!-- Twitter -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@midnight480" />
-    <meta name="twitter:creator" content="@midnight480" />
-    <meta name="twitter:title" content={siteTitle} />
-    <meta name="twitter:description" content={siteDescription} />
-    <meta name="twitter:image" content={ogImage || siteOGImage} />
     
     <!-- Additional SEO -->
     <meta name="theme-color" content="#0070f3" />

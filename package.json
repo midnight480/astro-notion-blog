@@ -21,7 +21,16 @@
     "format": "npx prettier --write .",
     "cache:fetch": "node scripts/blog-contents-cache.cjs",
     "cache:purge": "nx reset && rm -f tmp/*",
-    "_fetch-notion-blocks": "node scripts/retrieve-block-children.cjs"
+    "_fetch-notion-blocks": "node scripts/retrieve-block-children.cjs",
+    "test:middleware": "node functions/test-middleware.js",
+    "test:robots": "npx tsx src/lib/test-robots.ts",
+    "test:canonical": "npx tsx src/lib/test-canonical-url.ts",
+    "test:layout": "npx tsx src/lib/test-layout-integration.ts",
+    "test:redirect": "npx tsx src/lib/test-redirect-functionality.ts",
+    "test:seo-validation": "npx tsx src/lib/seo-validation-tools.ts",
+    "test:e2e": "npx tsx src/lib/test-e2e-integration.ts",
+    "test:seo": "npm run test:middleware && npm run test:robots && npm run test:canonical && npm run test:layout",
+    "test:all": "npm run test:seo && npm run test:redirect && npm run test:e2e"
   },
   "dependencies": {
     "@astrojs/react": "^4.2.7",

@@ -24,3 +24,13 @@ export const GISCUS_CATEGORY =
   import.meta.env.PUBLIC_GISCUS_CATEGORY || 'Announcements'
 export const GISCUS_CATEGORY_ID =
   import.meta.env.PUBLIC_GISCUS_CATEGORY_ID || ''
+
+// Cloudflare Pages環境変数
+export const CF_PAGES = import.meta.env.CF_PAGES || process.env.CF_PAGES || ''
+export const CF_PAGES_URL = import.meta.env.CF_PAGES_URL || process.env.CF_PAGES_URL || ''
+export const CF_PAGES_BRANCH = import.meta.env.CF_PAGES_BRANCH || process.env.CF_PAGES_BRANCH || ''
+
+// SEO関連の設定
+export const DEFAULT_CUSTOM_DOMAIN = 'midnight480.com'
+export const FORCE_HTTPS = true
+export const ENABLE_CANONICAL_REDIRECT = true
