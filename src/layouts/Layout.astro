@@ -1,7 +1,7 @@
 ---
 import { PUBLIC_GA_TRACKING_ID, ENABLE_LIGHTBOX } from '../server-constants.ts'
 import { getDatabase } from '../lib/notion/client.ts'
-import { getNavLink, getStaticFilePath, filePath } from '../lib/blog-helpers.ts'
+import { getStaticFilePath, filePath } from '../lib/blog-helpers.ts'
 import '../styles/syntax-coloring.css'
 import GoogleAnalytics from '../components/GoogleAnalytics.astro'
 import CookieConsent from '../components/CookieConsent.astro'
@@ -146,7 +146,7 @@ if (database.Icon && database.Icon.Type === 'file') {
           <div class="content">
             <header>
               <h1>
-                <a href={getNavLink('/')}>
+                <a href="/">
                   {
                     database.Icon && database.Icon.Type === 'emoji' ? (
                       <>
