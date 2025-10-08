@@ -233,7 +233,6 @@ export const isGitHubURL = (url: URL): boolean => {
   return /\/[^/]+\/[^/]+\/blob\/[^/]+\/.+/.test(url.pathname)
 }
 
-<<<<<<< HEAD
 export const isCircuitSimulatorAppletURL = (url: URL): boolean => {
   if (url.hostname !== 'falstad.com' && url.hostname !== 'www.falstad.com') {
     return false
