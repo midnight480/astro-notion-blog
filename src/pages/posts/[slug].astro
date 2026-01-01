@@ -115,7 +115,7 @@ if (post.FeaturedImage && post.FeaturedImage.Url) {
         description={post.Excerpt}
       />
 
-      {ENABLE_COMMENTS && GISCUS_REPO && GISCUS_REPO_ID && (
+      {ENABLE_COMMENTS && GISCUS_REPO && GISCUS_REPO_ID && GISCUS_CATEGORY_ID && (
         <Comments
           repo={GISCUS_REPO}
           repoId={GISCUS_REPO_ID}

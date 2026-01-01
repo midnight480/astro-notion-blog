@@ -17,7 +17,14 @@ export const REQUEST_TIMEOUT_MS = parseInt(
 export const ENABLE_LIGHTBOX = import.meta.env.ENABLE_LIGHTBOX
 
 // コメント機能の設定
-export const ENABLE_COMMENTS = import.meta.env.PUBLIC_ENABLE_COMMENTS === 'true'
+// PUBLIC_ENABLE_COMMENTSが明示的にfalseでない限り、Giscusの環境変数がすべて設定されていれば有効化
+const explicitDisable = import.meta.env.PUBLIC_ENABLE_COMMENTS === 'false'
+const hasGiscusConfig = 
+  import.meta.env.PUBLIC_GISCUS_REPO && 
+  import.meta.env.PUBLIC_GISCUS_REPO_ID && 
+  import.meta.env.PUBLIC_GISCUS_CATEGORY_ID
+
+export const ENABLE_COMMENTS = !explicitDisable && (import.meta.env.PUBLIC_ENABLE_COMMENTS === 'true' || hasGiscusConfig)
 export const GISCUS_REPO = import.meta.env.PUBLIC_GISCUS_REPO || ''
 export const GISCUS_REPO_ID = import.meta.env.PUBLIC_GISCUS_REPO_ID || ''
 export const GISCUS_CATEGORY =
