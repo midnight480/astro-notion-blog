@@ -344,8 +344,17 @@ export async function getBlock(blockId: string): Promise<Block> {
         )) as responses.RetrieveBlockResponse
       } catch (error: unknown) {
         if (error instanceof APIResponseError) {
+          // 429 (Rate Limit) はリトライ
+          if (error.status === 429) {
+            throw error
+          }
+          // 400系のエラー（400-499、429以外）はリトライしない
           if (error.status && error.status >= 400 && error.status < 500) {
             bail(error)
+          }
+          // 500系はリトライ
+          if (error.status && error.status >= 500) {
+            throw error
           }
         }
         throw error
@@ -353,6 +362,9 @@ export async function getBlock(blockId: string): Promise<Block> {
     },
     {
       retries: numberOfRetry,
+      onRetry: (error, attempt) => {
+        console.log(`Retrying getBlock (attempt ${attempt}/${numberOfRetry + 1}): ${blockId}`)
+      },
     }
   )
 
@@ -378,24 +390,6 @@ export async function getAllTags(): Promise<SelectProperty[]> {
 }
 
 export async function downloadFile(url: URL) {
-  let res!: AxiosResponse
-  try {
-    res = await axios({
-      method: 'get',
-      url: url.toString(),
-      timeout: REQUEST_TIMEOUT_MS,
-      responseType: 'stream',
-    })
-  } catch (err) {
-    console.log(err)
-    return Promise.resolve()
-  }
-
-  if (!res || res.status != 200) {
-    console.log(res)
-    return Promise.resolve()
-  }
-
   const dir = './public/notion/' + url.pathname.split('/').slice(-2)[0]
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir)
@@ -404,21 +398,79 @@ export async function downloadFile(url: URL) {
   const filename = decodeURIComponent(url.pathname.split('/').slice(-1)[0])
   const filepath = `${dir}/${filename}`
 
-  const writeStream = createWriteStream(filepath)
-  const rotate = sharp().rotate()
-
-  let stream = res.data
-
-  if (res.headers['content-type'] === 'image/jpeg') {
-    stream = stream.pipe(rotate)
-  }
-  try {
-    return pipeline(stream, new ExifTransformer(), writeStream)
-  } catch (err) {
-    console.log(err)
-    writeStream.end()
+  // 既にファイルが存在する場合はスキップ
+  if (fs.existsSync(filepath)) {
     return Promise.resolve()
   }
+
+  return retry(
+    async (bail) => {
+      let res!: AxiosResponse
+      try {
+        res = await axios({
+          method: 'get',
+          url: url.toString(),
+          timeout: REQUEST_TIMEOUT_MS,
+          responseType: 'stream',
+        })
+      } catch (err: unknown) {
+        // AxiosErrorの場合、ステータスコードを確認
+        if (axios.isAxiosError(err)) {
+          const status = err.response?.status
+          // 400系のエラー（400-499）はリトライしない（リクエストが不正）
+          if (status && status >= 400 && status < 500 && status !== 429) {
+            console.log(`Skipping download due to client error (${status}): ${url.toString()}`)
+            bail(err)
+            return Promise.resolve()
+          }
+          // 429 (Rate Limit) や 500系はリトライ
+          if (status === 429 || (status && status >= 500)) {
+            throw err
+          }
+        }
+        // その他のエラーもリトライ
+        throw err
+      }
+
+      if (!res || res.status !== 200) {
+        // 200以外のステータスコードの場合
+        const status = res?.status
+        if (status === 429 || (status && status >= 500 && status < 600)) {
+          throw new Error(`HTTP ${status} error: ${url.toString()}`)
+        }
+        // 400系のエラーはリトライしない
+        console.log(`Skipping download due to HTTP ${status || 'unknown'}: ${url.toString()}`)
+        return Promise.resolve()
+      }
+
+      const writeStream = createWriteStream(filepath)
+      const rotate = sharp().rotate()
+
+      let stream = res.data
+
+      if (res.headers['content-type'] === 'image/jpeg') {
+        stream = stream.pipe(rotate)
+      }
+
+      try {
+        return pipeline(stream, new ExifTransformer(), writeStream)
+      } catch (err) {
+        console.log(`Pipeline error for ${url.toString()}:`, err)
+        writeStream.end()
+        throw err
+      }
+    },
+    {
+      retries: numberOfRetry,
+      onRetry: (error, attempt) => {
+        console.log(`Retrying download (attempt ${attempt}/${numberOfRetry + 1}): ${url.toString()}`)
+      },
+    }
+  ).catch((err) => {
+    // 最終的に失敗した場合もエラーをスローせず、ログを出力して続行
+    console.log(`Failed to download after retries: ${url.toString()}`, err)
+    return Promise.resolve()
+  })
 }
 
 export async function getDatabase(): Promise<Database> {

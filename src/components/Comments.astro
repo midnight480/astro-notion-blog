@@ -28,26 +28,39 @@ const {
   lang = 'ja',
   loading = 'lazy'
 } = Astro.props
+
+// 必須パラメータの検証
+const isValid = repo && repoId && category && categoryId
 ---
 
-<div class="comments-container">
-  <script src="https://giscus.app/client.js"
-    data-repo={repo}
-    data-repo-id={repoId}
-    data-category={category}
-    data-category-id={categoryId || undefined}
-    data-mapping={mapping}
-    data-strict={strict}
-    data-reactions-enabled={reactionsEnabled}
-    data-emit-metadata={emitMetadata}
-    data-input-position={inputPosition}
-    data-theme={theme}
-    data-lang={lang}
-    data-loading={loading}
-    crossorigin="anonymous"
-    async>
-  </script>
-</div>
+{isValid ? (
+  <div class="comments-container">
+    <script src="https://giscus.app/client.js"
+      data-repo={repo}
+      data-repo-id={repoId}
+      data-category={category}
+      data-category-id={categoryId}
+      data-mapping={mapping}
+      data-strict={strict ? '1' : '0'}
+      data-reactions-enabled={reactionsEnabled ? '1' : '0'}
+      data-emit-metadata={emitMetadata ? '1' : '0'}
+      data-input-position={inputPosition}
+      data-theme={theme}
+      data-lang={lang}
+      data-loading={loading}
+      crossorigin="anonymous"
+      async>
+    </script>
+  </div>
+) : (
+  <div class="comments-container">
+    <p class="comments-error">
+      Giscusコメントシステムの設定が不完全です。以下の環境変数が設定されているか確認してください：
+      <br />
+      PUBLIC_GISCUS_REPO, PUBLIC_GISCUS_REPO_ID, PUBLIC_GISCUS_CATEGORY, PUBLIC_GISCUS_CATEGORY_ID
+    </p>
+  </div>
+)}
 
 <style>
   .comments-container {
@@ -58,5 +71,21 @@ const {
   
   :global(.dark) .comments-container {
     border-top-color: #374151;
+  }
+
+  .comments-error {
+    padding: 1rem;
+    background-color: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 0.5rem;
+    color: #991b1b;
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+
+  :global(.dark) .comments-error {
+    background-color: #7f1d1d;
+    border-color: #991b1b;
+    color: #fecaca;
   }
 </style> 

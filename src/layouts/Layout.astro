@@ -83,6 +83,10 @@ if (database.Icon && database.Icon.Type === 'file') {
     <!-- Enhanced Canonical URL -->
     <CanonicalUrl path={path} />
     
+    <!-- Giscus backlink meta tag -->
+    <!-- See: https://github.com/giscus/giscus/blob/main/ADVANCED-USAGE.md#giscusbacklink -->
+    <meta name="giscus:backlink" content={canonicalURL} />
+    
     <!-- Enhanced SEO Meta Tags -->
     <SeoMetaTags 
       title={siteTitle}

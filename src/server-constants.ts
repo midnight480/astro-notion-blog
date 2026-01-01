@@ -31,6 +31,10 @@ export const GISCUS_CATEGORY =
   import.meta.env.PUBLIC_GISCUS_CATEGORY || 'Announcements'
 export const GISCUS_CATEGORY_ID =
   import.meta.env.PUBLIC_GISCUS_CATEGORY_ID || ''
+export const GISCUS_STRICT =
+  import.meta.env.PUBLIC_GISCUS_STRICT === 'true' || false
+export const GISCUS_EMIT_METADATA =
+  import.meta.env.PUBLIC_GISCUS_EMIT_METADATA === 'true' || false
 
 // Cloudflare Pages環境変数
 export const CF_PAGES = import.meta.env.CF_PAGES || process.env.CF_PAGES || ''

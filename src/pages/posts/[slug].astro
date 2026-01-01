@@ -16,7 +16,7 @@ import {
   filePath,
   extractTargetBlocks,
 } from '../../lib/blog-helpers.ts'
-import { ENABLE_COMMENTS, GISCUS_REPO, GISCUS_REPO_ID, GISCUS_CATEGORY, GISCUS_CATEGORY_ID } from '../../server-constants.ts'
+import { ENABLE_COMMENTS, GISCUS_REPO, GISCUS_REPO_ID, GISCUS_CATEGORY, GISCUS_CATEGORY_ID, GISCUS_STRICT, GISCUS_EMIT_METADATA } from '../../server-constants.ts'
 import Layout from '../../layouts/Layout.astro'
 import PostDate from '../../components/PostDate.astro'
 import PostTags from '../../components/PostTags.astro'
@@ -62,14 +62,20 @@ const fileAtacchedBlocks = extractTargetBlocks('image', blocks)
   })
 
 // Download files
-await Promise.all(
+await Promise.allSettled(
   fileAtacchedBlocks
     .map(async (block) => {
       const expiryTime = (block.Image || block.File).File.ExpiryTime
       if (Date.parse(expiryTime) > Date.now()) {
         return Promise.resolve(block)
       }
-      return getBlock(block.Id)
+      try {
+        return await getBlock(block.Id)
+      } catch (error) {
+        console.log(`Failed to get block ${block.Id}:`, error)
+        // エラーが発生してもブロックを返して続行
+        return Promise.resolve(block)
+      }
     })
     .map((promise) =>
       promise.then((block) => {
@@ -122,9 +128,9 @@ if (post.FeaturedImage && post.FeaturedImage.Url) {
           category={GISCUS_CATEGORY}
           categoryId={GISCUS_CATEGORY_ID}
           mapping="pathname"
-          strict={false}
+          strict={GISCUS_STRICT}
           reactionsEnabled={true}
-          emitMetadata={false}
+          emitMetadata={GISCUS_EMIT_METADATA}
           inputPosition="bottom"
           theme="preferred_color_scheme"
           lang="ja"
