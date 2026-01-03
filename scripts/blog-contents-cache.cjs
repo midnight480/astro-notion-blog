@@ -3,32 +3,52 @@ const { Client } = require('@notionhq/client');
 const cliProgress = require('cli-progress');
 const { PromisePool } = require('@supercharge/promise-pool');
 
-const notion = new Client({ auth: process.env.NOTION_API_SECRET });
+const notion = new Client({
+  auth: process.env.NOTION_API_SECRET,
+  notionVersion: '2025-09-03',
+});
+
+const getDataSourceId = async () => {
+  const res = await notion.databases.retrieve({
+    database_id: process.env.DATABASE_ID,
+  });
+
+  // Get the first data source ID
+  const dataSources = res.data_sources || [];
+  if (dataSources.length === 0) {
+    throw new Error('No data sources found for database');
+  }
+
+  return dataSources[0].id;
+};
 
 const getAllPages = async () => {
-  const params = {
-    database_id: process.env.DATABASE_ID,
-    filter: {
-      and: [
-        {
-          property: 'Published',
-          checkbox: {
-            equals: true,
-          },
-        },
-        {
-          property: 'Date',
-          date: {
-            on_or_before: new Date().toISOString(),
-          },
-        },
-      ],
-    },
-  };
+  const dataSourceId = await getDataSourceId();
 
   let results = [];
+  let startCursor = undefined;
+
   while (true) {
-    const res = await notion.databases.query(params);
+    const res = await notion.dataSources.query({
+      data_source_id: dataSourceId,
+      filter: {
+        and: [
+          {
+            property: 'Published',
+            checkbox: {
+              equals: true,
+            },
+          },
+          {
+            property: 'Date',
+            date: {
+              on_or_before: new Date().toISOString(),
+            },
+          },
+        ],
+      },
+      start_cursor: startCursor,
+    });
 
     results = results.concat(res.results);
 
@@ -36,7 +56,7 @@ const getAllPages = async () => {
       break;
     }
 
-    params['start_cursor'] = res.next_cursor;
+    startCursor = res.next_cursor;
   }
 
   const pages = results.map((result) => {
