@@ -8,6 +8,7 @@ import {
   isCodePenURL,
   isSpeakerDeckURL,
   isDocswellURL,
+  isCircuitSimulatorAppletURL,
 } from '../../lib/blog-helpers.ts'
 import Bookmark from './Bookmark.astro'
 import TweetEmbed from './TweetEmbed.astro'
@@ -17,6 +18,7 @@ import PinterestEmbed from './PinterestEmbed.astro'
 import CodePenEmbed from './CodePenEmbed.astro'
 import SpeakerDeckEmbed from './SpeakerDeckEmbed.astro'
 import DocswellEmbed from './DocswellEmbed.astro'
+import CircuitSimulatorAppletEmbed from './CircuitSimulatorAppletEmbed.astro'
 
 export interface Props {
   block: interfaces.Block
@@ -45,6 +47,8 @@ try {
       <PinterestEmbed url={url} />
     ) : isCodePenURL(url) ? (
       <CodePenEmbed url={url} />
+    ) : isCircuitSimulatorAppletURL(url) ? (
+      <CircuitSimulatorAppletEmbed url={url} />
     ) : isSpeakerDeckURL(url) ? (
       <SpeakerDeckEmbed url={url} />
     ) : isDocswellURL(url) ? (

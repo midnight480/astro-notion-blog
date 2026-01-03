@@ -58,53 +58,98 @@ import { Client, APIResponseError } from '@notionhq/client'
 
 const client = new Client({
   auth: NOTION_API_SECRET,
+  notionVersion: '2025-09-03',
 })
 
 let postsCache: Post[] | null = null
 let dbCache: Database | null = null
+let dataSourceIdCache: string | null = null
 
 const numberOfRetry = 2
+
+async function getDataSourceId(): Promise<string> {
+  if (dataSourceIdCache !== null) {
+    return Promise.resolve(dataSourceIdCache)
+  }
+
+  const params: requestParams.RetrieveDatabase = {
+    database_id: DATABASE_ID,
+  }
+
+  const res = await retry(
+    async (bail) => {
+      try {
+        return (await client.databases.retrieve(
+          params as any // eslint-disable-line @typescript-eslint/no-explicit-any
+        )) as responses.RetrieveDatabaseResponse
+      } catch (error: unknown) {
+        if (error instanceof APIResponseError) {
+          if (error.status && error.status >= 400 && error.status < 500) {
+            bail(error)
+          }
+        }
+        throw error
+      }
+    },
+    {
+      retries: numberOfRetry,
+    }
+  )
+
+  // Get the first data source ID
+  // @ts-expect-error - data_sources may not be in type definitions yet
+  const dataSources = res.data_sources || []
+  if (dataSources.length === 0) {
+    throw new Error('No data sources found for database')
+  }
+
+  dataSourceIdCache = dataSources[0].id
+  return dataSourceIdCache
+}
 
 export async function getAllPosts(): Promise<Post[]> {
   if (postsCache !== null) {
     return Promise.resolve(postsCache)
   }
 
-  const params: requestParams.QueryDatabase = {
-    database_id: DATABASE_ID,
-    filter: {
-      and: [
-        {
-          property: 'Published',
-          checkbox: {
-            equals: true,
-          },
-        },
-        {
-          property: 'Date',
-          date: {
-            on_or_before: new Date().toISOString(),
-          },
-        },
-      ],
-    },
-    sorts: [
-      {
-        property: 'Date',
-        direction: 'descending',
-      },
-    ],
-    page_size: 100,
-  }
+  const dataSourceId = await getDataSourceId()
 
   let results: responses.PageObject[] = []
+  let startCursor: string | undefined = undefined
+
   while (true) {
     const res = await retry(
       async (bail) => {
         try {
-          return (await client.databases.query(
-            params as any // eslint-disable-line @typescript-eslint/no-explicit-any
-          )) as responses.QueryDatabaseResponse
+          // Use dataSources.query() for the new API version
+          // @ts-expect-error - dataSources may not be in type definitions yet
+          return (await client.dataSources.query({
+            data_source_id: dataSourceId,
+            filter: {
+              and: [
+                {
+                  property: 'Published',
+                  checkbox: {
+                    equals: true,
+                  },
+                },
+                {
+                  property: 'Date',
+                  date: {
+                    on_or_before: new Date().toISOString(),
+                  },
+                },
+              ],
+            },
+            sorts: [
+              {
+                property: 'Date',
+                direction: 'descending',
+              },
+            ],
+            page_size: 100,
+            start_cursor: startCursor,
+          })) as responses.QueryDatabaseResponse
         } catch (error: unknown) {
           if (error instanceof APIResponseError) {
             if (error.status && error.status >= 400 && error.status < 500) {
@@ -125,7 +170,7 @@ export async function getAllPosts(): Promise<Post[]> {
       break
     }
 
-    params['start_cursor'] = res.next_cursor as string
+    startCursor = res.next_cursor
   }
 
   postsCache = results
@@ -774,6 +819,7 @@ function _buildBlock(blockObject: responses.BlockObject): Block {
     case 'bookmark':
       if (blockObject.bookmark) {
         const bookmark: Bookmark = {
+          Caption: blockObject.bookmark.caption?.map(_buildRichText) || [],
           Url: blockObject.bookmark.url,
         }
         block.Bookmark = bookmark
