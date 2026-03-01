@@ -34,7 +34,7 @@
   },
   "dependencies": {
     "@astrojs/react": "^4.4.2",
-    "@astrojs/rss": "^4.0.12",
+    "@astrojs/rss": "^4.0.15",
     "@iconify-json/octicon": "^1.2.19",
     "@notionhq/client": "^5.6.0",
     "@supercharge/promise-pool": "^3.2.0",
@@ -47,7 +47,7 @@
     "mermaid": "^11.12.1",
     "metascraper": "^5.49.7",
     "metascraper-description": "^5.49.7",
-    "metascraper-image": "^5.47.1",
+    "metascraper-image": "^5.49.15",
     "metascraper-title": "^5.46.18",
     "prismjs": "^1.30.0",
     "react": "^19.2.0",
