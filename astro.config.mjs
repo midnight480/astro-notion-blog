@@ -51,21 +51,20 @@ export default defineConfig({
   vite: {
     // Viteのビルド最適化
     build: {
-      // 並列処理を有効化
       rollupOptions: {
         output: {
-          manualChunks: {
-            // 大きなライブラリを分離
-            mermaid: ['mermaid'],
-            katex: ['katex'],
-            prismjs: ['prismjs'],
+          // Vite 7 では外部モジュールを manualChunks に静的指定できないため関数形式を使用
+          manualChunks(id) {
+            if (id.includes('node_modules/mermaid')) return 'mermaid';
+            if (id.includes('node_modules/katex')) return 'katex';
+            if (id.includes('node_modules/prismjs')) return 'prismjs';
           },
         },
       },
     },
-    // 並列処理の設定
+    // 依存関係の事前バンドル設定
     optimizeDeps: {
-      include: ['mermaid', 'katex', 'prismjs'],
+      include: ['katex', 'prismjs'],
     },
   },
 });
