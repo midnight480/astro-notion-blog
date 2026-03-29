@@ -53,7 +53,6 @@ import type {
   Mention,
   Reference,
 } from '../interfaces'
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 import { Client, APIResponseError } from '@notionhq/client'
 
 const client = new Client({
@@ -844,12 +843,13 @@ function _buildBlock(blockObject: responses.BlockObject): Block {
         block.Table = table
       }
       break
-    case 'column_list':
+    case 'column_list': {
       const columnList: ColumnList = {
         Columns: [],
       }
       block.ColumnList = columnList
       break
+    }
     case 'table_of_contents':
       if (blockObject.table_of_contents) {
         const tableOfContents: TableOfContents = {
