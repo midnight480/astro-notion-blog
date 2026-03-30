@@ -16,5 +16,5 @@ jobs:
       - uses: actions/checkout@v4
       - uses: flatt-security/setup-takumi-guard-npm@v1
         with:
-          bot-id: "BT01KMWSJ4TEBJXFM8PDM2EKJ6HJ" # midnight480
+          bot-id: ${{ secrets.TAKUMI_GUARD_BOT_ID }}
       - run: npm install
