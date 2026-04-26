@@ -96,14 +96,13 @@ async function getDataSourceId(): Promise<string> {
   )
 
   // Get the first data source ID
-  // @ts-expect-error - data_sources may not be in type definitions yet
-  const dataSources = res.data_sources || []
+  const dataSources = (res as any).data_sources || [] // eslint-disable-line @typescript-eslint/no-explicit-any
   if (dataSources.length === 0) {
     throw new Error('No data sources found for database')
   }
 
-  dataSourceIdCache = dataSources[0].id
-  return dataSourceIdCache
+  dataSourceIdCache = dataSources[0].id as string
+  return dataSourceIdCache as string
 }
 
 export async function getAllPosts(): Promise<Post[]> {
@@ -120,8 +119,7 @@ export async function getAllPosts(): Promise<Post[]> {
     const res = await retry(
       async (bail) => {
         try {
-          // Use dataSources.query() for the new API version
-          // @ts-expect-error - dataSources may not be in type definitions yet
+          // Use dataSources.query() for the new API version (2025-09-03+)
           return (await client.dataSources.query({
             data_source_id: dataSourceId,
             filter: {
@@ -169,7 +167,7 @@ export async function getAllPosts(): Promise<Post[]> {
       break
     }
 
-    startCursor = res.next_cursor
+    startCursor = res.next_cursor ?? undefined
   }
 
   postsCache = results

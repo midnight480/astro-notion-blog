@@ -33,7 +33,7 @@ export const GET: APIRoute = async ({ site }) => {
   ${posts
     .map((post) => {
       const postUrl = `${cleanBaseUrl}${getPostLink(post.Slug)}`
-      const lastmod = post.LastEditedTime || post.Date
+      const lastmod = post.Date
       return `  <url>
     <loc>${postUrl}</loc>
     <lastmod>${lastmod}</lastmod>
