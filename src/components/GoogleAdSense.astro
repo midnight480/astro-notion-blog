@@ -1,0 +1,70 @@
+---
+export interface Props {
+  clientId: string
+}
+
+const { clientId = '' } = Astro.props
+const isProd = import.meta.env.PROD
+---
+
+{
+  clientId && isProd && (
+    <>
+      {/* AdSense head script - Cookie同意後にのみ有効化 */}
+      <script
+        is:inline
+        define:vars={{ clientId }}
+      >
+        // Cookie同意の確認
+        function getAdSenseCookie(name) {
+          const value = `; ${document.cookie}`
+          const parts = value.split(`; ${name}=`)
+          if (parts.length === 2) return parts.pop().split(';').shift()
+          return null
+        }
+
+        function loadAdSenseScript(id) {
+          // 既にスクリプトが読み込まれている場合はスキップ
+          if (document.querySelector('script[src*="adsbygoogle"]')) return
+
+          const script = document.createElement('script')
+          script.async = true
+          script.crossOrigin = 'anonymous'
+          script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${id}`
+          document.head.appendChild(script)
+        }
+
+        function showAdSenseAds() {
+          const adContainers = document.querySelectorAll('.adsense-container')
+          adContainers.forEach(function(container) {
+            container.classList.remove('adsense-hidden')
+          })
+        }
+
+        function hideAdSenseAds() {
+          const adContainers = document.querySelectorAll('.adsense-container')
+          adContainers.forEach(function(container) {
+            container.classList.add('adsense-hidden')
+          })
+        }
+
+        // 初期化: Cookie同意済みの場合はAdSenseを読み込む
+        if (getAdSenseCookie('cookie-consent') === 'accepted') {
+          loadAdSenseScript(clientId)
+          showAdSenseAds()
+        }
+
+        // カスタムイベントリスナー: Cookie同意時にAdSenseを有効化
+        document.addEventListener('cookie-consent-accepted', function() {
+          loadAdSenseScript(clientId)
+          showAdSenseAds()
+        })
+
+        // カスタムイベントリスナー: Cookie拒否時にAdSenseを非表示
+        document.addEventListener('cookie-consent-declined', function() {
+          hideAdSenseAds()
+        })
+      </script>
+    </>
+  )
+}

@@ -1,9 +1,11 @@
 ---
-import { PUBLIC_GA_TRACKING_ID, ENABLE_LIGHTBOX } from '../server-constants.ts'
+import { PUBLIC_GA_TRACKING_ID, ENABLE_LIGHTBOX, ENABLE_ADSENSE, PUBLIC_ADSENSE_CLIENT_ID } from '../server-constants.ts'
 import { getDatabase } from '../lib/notion/client.ts'
 import { getStaticFilePath, filePath } from '../lib/blog-helpers.ts'
 import '../styles/syntax-coloring.css'
 import GoogleAnalytics from '../components/GoogleAnalytics.astro'
+import GoogleAdSense from '../components/GoogleAdSense.astro'
+import AdSenseSidebar from '../components/AdSenseSidebar.astro'
 import CookieConsent from '../components/CookieConsent.astro'
 import SearchModal from '../components/SearchModal.astro'
 import SearchButton from '../components/SearchButton.astro'
@@ -132,6 +134,7 @@ if (database.Icon && database.Icon.Type === 'file') {
   <body>
     <ThemeToggle />
     <GoogleAnalytics trackingId={PUBLIC_GA_TRACKING_ID} />
+    {ENABLE_ADSENSE && <GoogleAdSense clientId={PUBLIC_ADSENSE_CLIENT_ID} />}
     <CookieConsent trackingId={PUBLIC_GA_TRACKING_ID} />
     <div class="container">
       <header>
@@ -200,6 +203,7 @@ if (database.Icon && database.Icon.Type === 'file') {
             <Profile />
           <SearchButton />
           <slot name="aside" />
+          {ENABLE_ADSENSE && <AdSenseSidebar clientId={PUBLIC_ADSENSE_CLIENT_ID} />}
         </aside>
       </div>
     </div>
