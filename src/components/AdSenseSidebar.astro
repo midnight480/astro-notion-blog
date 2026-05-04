@@ -1,0 +1,49 @@
+---
+export interface Props {
+  clientId: string
+}
+
+const { clientId = '' } = Astro.props
+const isProd = import.meta.env.PROD
+---
+
+{
+  clientId && isProd && (
+    <div
+      class="adsense-container adsense-hidden"
+      data-testid="adsense-sidebar-ad"
+    >
+      <div class="adsense-label">スポンサーリンク</div>
+      <ins
+        class="adsbygoogle"
+        style="display:block"
+        data-ad-client={clientId}
+        data-ad-slot=""
+        data-ad-format="auto"
+        data-full-width-responsive="true"
+      />
+    </div>
+  )
+}
+
+<style>
+  .adsense-container {
+    margin: 20px 0;
+    text-align: center;
+  }
+
+  .adsense-label {
+    font-size: 0.7rem;
+    color: #999;
+    margin-bottom: 4px;
+    text-align: center;
+  }
+
+  .adsense-hidden {
+    display: none;
+  }
+
+  :global(.dark) .adsense-label {
+    color: #777;
+  }
+</style>

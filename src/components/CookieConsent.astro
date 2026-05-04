@@ -13,6 +13,7 @@ const { trackingId } = Astro.props
         <div class="cookie-text">
           <p>
             このウェブサイトでは、ユーザーエクスペリエンスの向上とサイトの分析のためにGoogle Analyticsを使用しています。
+            また、Google AdSenseによる広告を表示しています。
             サイトを利用することで、Cookieの使用に同意したことになります。
           </p>
           <p>
@@ -207,6 +208,9 @@ const { trackingId } = Astro.props
         'analytics_storage': 'granted'
       })
     }
+
+    // Google AdSenseを有効化（カスタムイベント発火）
+    document.dispatchEvent(new CustomEvent('cookie-consent-accepted'))
   }
 
   function declineCookies() {
@@ -219,6 +223,9 @@ const { trackingId } = Astro.props
         'analytics_storage': 'denied'
       })
     }
+
+    // Google AdSenseを無効化（カスタムイベント発火）
+    document.dispatchEvent(new CustomEvent('cookie-consent-declined'))
   }
 
   function hideConsentBanner() {

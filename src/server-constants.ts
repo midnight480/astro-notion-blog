@@ -45,3 +45,7 @@ export const CF_PAGES_BRANCH = import.meta.env.CF_PAGES_BRANCH || process.env.CF
 export const DEFAULT_CUSTOM_DOMAIN = 'midnight480.com'
 export const FORCE_HTTPS = true
 export const ENABLE_CANONICAL_REDIRECT = true
+
+// Google AdSense設定
+export const ENABLE_ADSENSE = import.meta.env.ENABLE_ADSENSE === 'true'
+export const PUBLIC_ADSENSE_CLIENT_ID = import.meta.env.PUBLIC_ADSENSE_CLIENT_ID || ''
