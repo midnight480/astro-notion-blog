@@ -36,6 +36,7 @@ const getSite = function () {
 export default defineConfig({
   site: getSite(),
   base: BASE_PATH,
+  compressHTML: false,
   integrations: [
     icon(),
     CoverImageDownloader(),
@@ -53,7 +54,7 @@ export default defineConfig({
     build: {
       rollupOptions: {
         output: {
-          // Vite 7 では外部モジュールを manualChunks に静的指定できないため関数形式を使用
+          // Vite 8 では外部モジュールを manualChunks に静的指定できないため関数形式を使用
           manualChunks(id) {
             if (id.includes('node_modules/mermaid')) return 'mermaid';
             if (id.includes('node_modules/katex')) return 'katex';
