@@ -69,55 +69,55 @@
 }
 
 /* Dark mode overrides for color classes */
-:global(html.dark) .default,
-:global(html.dark) .default:hover,
-:global(html.dark) p.default,
-:global(html.dark) span.default {
+html.dark .default,
+html.dark .default:hover,
+html.dark p.default,
+html.dark span.default {
   color: #fff !important;
 }
 
-:global(html.dark) .gray,
-:global(html.dark) .gray:hover {
+html.dark .gray,
+html.dark .gray:hover {
   color: var(--gray-text) !important;
 }
 
-:global(html.dark) .brown,
-:global(html.dark) .brown:hover {
+html.dark .brown,
+html.dark .brown:hover {
   color: var(--brown-text) !important;
 }
 
-:global(html.dark) .orange,
-:global(html.dark) .orange:hover {
+html.dark .orange,
+html.dark .orange:hover {
   color: var(--orange-text) !important;
 }
 
-:global(html.dark) .yellow,
-:global(html.dark) .yellow:hover {
+html.dark .yellow,
+html.dark .yellow:hover {
   color: var(--yellow-text) !important;
 }
 
-:global(html.dark) .green,
-:global(html.dark) .green:hover {
+html.dark .green,
+html.dark .green:hover {
   color: var(--green-text) !important;
 }
 
-:global(html.dark) .blue,
-:global(html.dark) .blue:hover {
+html.dark .blue,
+html.dark .blue:hover {
   color: var(--blue-text) !important;
 }
 
-:global(html.dark) .purple,
-:global(html.dark) .purple:hover {
+html.dark .purple,
+html.dark .purple:hover {
   color: var(--purple-text) !important;
 }
 
-:global(html.dark) .pink,
-:global(html.dark) .pink:hover {
+html.dark .pink,
+html.dark .pink:hover {
   color: var(--pink-text) !important;
 }
 
-:global(html.dark) .red,
-:global(html.dark) .red:hover {
+html.dark .red,
+html.dark .red:hover {
   color: var(--red-text) !important;
 }
 .gray-background {
@@ -216,44 +216,44 @@ a {
   color: var(--text-gray);
 }
 
-:global(html.dark) body,
-:global(html.dark) h1,
-:global(html.dark) h2,
-:global(html.dark) h3,
-:global(html.dark) h4,
-:global(html.dark) h5,
-:global(html.dark) h6,
-:global(html.dark) p,
-:global(html.dark) span,
-:global(html.dark) div,
-:global(html.dark) li,
-:global(html.dark) ul,
-:global(html.dark) ol,
-:global(html.dark) th,
-:global(html.dark) td {
+html.dark body,
+html.dark h1,
+html.dark h2,
+html.dark h3,
+html.dark h4,
+html.dark h5,
+html.dark h6,
+html.dark p,
+html.dark span,
+html.dark div,
+html.dark li,
+html.dark ul,
+html.dark ol,
+html.dark th,
+html.dark td {
   color: #fff !important;
 }
 
 /* 特に本文のテキストに対して */
-:global(html.dark) .post p,
-:global(html.dark) .post span,
-:global(html.dark) .post div,
-:global(html.dark) .post li {
+html.dark .post p,
+html.dark .post span,
+html.dark .post div,
+html.dark .post li {
   color: #fff !important;
 }
 
-:global(html.dark) a {
+html.dark a {
   color: #8ec2f7 !important;
 }
-:global(html.dark) .tag {
+html.dark .tag {
   color: #222 !important;
 }
 
 :root.dark .code,
 html.dark .code,
 body.dark .code,
-:global(html.dark) .code,
-:global(body.dark) .code {
+html.dark .code,
+body.dark .code {
   background: #222 !important;
   border-radius: 8px;
   padding: 1.2em 1em;
@@ -261,12 +261,12 @@ body.dark .code,
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
 }
 
-:global(html.dark) .code,
-:global(html.dark) .code > div,
-:global(html.dark) .code > pre,
-:global(html.dark) .code > div > pre,
-:global(html.dark) .code > div[data-astro-cid-noi6lzum],
-:global(html.dark)
+html.dark .code,
+html.dark .code > div,
+html.dark .code > pre,
+html.dark .code > div > pre,
+html.dark .code > div[data-astro-cid-noi6lzum],
+html.dark
   .code
   > div[data-astro-cid-noi6lzum]
   > pre[data-astro-cid-noi6lzum] {
@@ -274,12 +274,12 @@ body.dark .code,
 }
 
 :root.dark ::selection,
-:global(html.dark) ::selection {
+html.dark ::selection {
   background: #4e5d94; /* お好みで調整可 */
   color: #fff;
 }
 :root:not(.dark) ::selection,
-:global(html):not(.dark) ::selection {
+html:not(.dark) ::selection {
   background: #b3d4fc;
   color: #222;
 }

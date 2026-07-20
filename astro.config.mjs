@@ -52,6 +52,8 @@ export default defineConfig({
   vite: {
     // Viteのビルド最適化
     build: {
+      // mermaid は単独チャンクに分離済みだが元々 500kB を超えるため上限を引き上げる
+      chunkSizeWarningLimit: 1500,
       rollupOptions: {
         output: {
           // Vite 8 では外部モジュールを manualChunks に静的指定できないため関数形式を使用
