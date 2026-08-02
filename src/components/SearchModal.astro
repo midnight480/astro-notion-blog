@@ -215,6 +215,18 @@
       return results
     }
 
+    // RSS 由来のリンクは javascript: などのスキームを弾いてから href に入れる
+    function safeHref(link) {
+      try {
+        const url = new URL(link, window.location.origin)
+        return url.protocol === 'http:' || url.protocol === 'https:'
+          ? url.href
+          : '#'
+      } catch {
+        return '#'
+      }
+    }
+
     function renderResults(results) {
       const ul = document.querySelector('.search-result ul')
       ul.innerHTML = ''
@@ -229,7 +241,7 @@
         title.textContent = item.title
         description.classList.add('search-result-description')
         description.textContent = item.description
-        a.href = item.link
+        a.href = safeHref(item.link)
 
         li.addEventListener('mouseover', handleMouseover)
 
