@@ -9,7 +9,6 @@ import AdSenseSidebar from '../components/AdSenseSidebar.astro'
 import CookieConsent from '../components/CookieConsent.astro'
 import SearchModal from '../components/SearchModal.astro'
 import SearchButton from '../components/SearchButton.astro'
-import ThemeToggle from '../components/ThemeToggle.astro'
 import Profile from '../components/Profile.astro'
 import StructuredData from '../components/StructuredData.astro'
 import CanonicalUrl from '../components/CanonicalUrl.astro'
@@ -67,6 +66,22 @@ if (database.Icon && database.Icon.Type === 'file') {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- テーマ適用（描画前に実行してちらつきを防ぐ。切り替え UI は Profile メニュー内） -->
+    <script is:inline>
+      ;(() => {
+        const stored = localStorage.getItem('theme')
+        const theme =
+          stored ||
+          (window.matchMedia('(prefers-color-scheme: dark)').matches
+            ? 'dark'
+            : 'light')
+
+        document.documentElement.classList.toggle('dark', theme === 'dark')
+        localStorage.setItem('theme', theme)
+      })()
+    </script>
+
     <!-- AI Bot restrictions (additional to SeoMetaTags) -->
     <meta name="robots" content="noai, noimageai" />
     <meta name="GPTBot" content="noindex, nofollow" />
@@ -138,7 +153,6 @@ if (database.Icon && database.Icon.Type === 'file') {
     )}
   </head>
   <body>
-    <ThemeToggle />
     <GoogleAnalytics trackingId={PUBLIC_GA_TRACKING_ID} />
     {ENABLE_ADSENSE && <GoogleAdSense clientId={PUBLIC_ADSENSE_CLIENT_ID} />}
     <CookieConsent trackingId={PUBLIC_GA_TRACKING_ID} />
