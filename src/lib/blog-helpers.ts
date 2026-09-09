@@ -1,4 +1,4 @@
-import { BASE_PATH, REQUEST_TIMEOUT_MS } from '../server-constants'
+import { BASE_PATH, OGP_REQUEST_TIMEOUT_MS } from '../server-constants'
 import type {
   Block,
   Heading1,
@@ -93,7 +93,7 @@ export const buildURLToHTMLMap = async (
       const controller = new AbortController()
       const timeout = setTimeout(() => {
         controller.abort()
-      }, REQUEST_TIMEOUT_MS)
+      }, OGP_REQUEST_TIMEOUT_MS)
 
       return fetch(url.toString(), { signal: controller.signal })
         .then((res) => {

@@ -10,8 +10,22 @@ export const BASE_PATH =
 
 export const PUBLIC_GA_TRACKING_ID = import.meta.env.PUBLIC_GA_TRACKING_ID
 export const NUMBER_OF_POSTS_PER_PAGE = 10
+// 画像などのファイルダウンロード用タイムアウト。
+// Cloudflare Pages では環境変数は process.env 経由で渡るため両方を見る。
 export const REQUEST_TIMEOUT_MS = parseInt(
-  import.meta.env.REQUEST_TIMEOUT_MS || '10000',
+  import.meta.env.REQUEST_TIMEOUT_MS ||
+    process.env.REQUEST_TIMEOUT_MS ||
+    '10000',
+  10
+)
+
+// ブックマーク/埋め込みの OGP 取得用タイムアウト。
+// この取得はページ描画中に実行されビルド時間へ直接効くため、
+// ファイルダウンロード用より短くする（応答しない外部サイトを長く待たない）。
+export const OGP_REQUEST_TIMEOUT_MS = parseInt(
+  import.meta.env.OGP_REQUEST_TIMEOUT_MS ||
+    process.env.OGP_REQUEST_TIMEOUT_MS ||
+    '3000',
   10
 )
 export const ENABLE_LIGHTBOX = import.meta.env.ENABLE_LIGHTBOX
