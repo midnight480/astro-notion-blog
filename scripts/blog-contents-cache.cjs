@@ -1,12 +1,20 @@
-const { exec } = require('child_process');
+const fs = require('fs');
+const path = require('path');
 const { Client } = require('@notionhq/client');
 const cliProgress = require('cli-progress');
 const { PromisePool } = require('@supercharge/promise-pool');
+const { retrieveAndWriteBlockChildren } = require('./retrieve-block-children.cjs');
 
 const notion = new Client({
   auth: process.env.NOTION_API_SECRET,
   notionVersion: '2025-09-03',
 });
+
+const CACHE_DIR = 'tmp';
+// ページごとの last_edited_time を記録し、次回以降は差分だけ取得する。
+// 以前は nx のキャッシュに任せていたが、nxCloudAccessToken が空でローカル
+// キャッシュのみのため、毎回まっさらな CI コンテナでは一切効いていなかった。
+const MANIFEST_PATH = path.join(CACHE_DIR, '.cache-manifest.json');
 
 const getDataSourceId = async () => {
   const res = await notion.databases.retrieve({
@@ -72,40 +80,72 @@ const getAllPages = async () => {
   return pages;
 };
 
-(async () => {
-  const pages = await getAllPages();
+const readManifest = () => {
+  try {
+    return JSON.parse(fs.readFileSync(MANIFEST_PATH, 'utf-8'));
+  } catch {
+    return {};
+  }
+};
 
-  const concurrency = parseInt(process.env.CACHE_CONCURRENCY || '4', 10);
+const isCached = (manifest, page) =>
+  manifest[page.id] === page.last_edited_time &&
+  fs.existsSync(path.join(CACHE_DIR, `${page.id}.json`));
+
+(async () => {
+  fs.mkdirSync(CACHE_DIR, { recursive: true });
+
+  const pages = await getAllPages();
+  const manifest = readManifest();
+
+  const targets = pages.filter((page) => !isCached(manifest, page));
+  const skippedCount = pages.length - targets.length;
+
+  if (skippedCount > 0) {
+    console.log(
+      `キャッシュ済みのためスキップ: ${skippedCount}/${pages.length} ページ`
+    );
+  }
+
+  if (targets.length === 0) {
+    console.log(`キャッシュ処理完了: ${pages.length}/${pages.length} 成功`);
+    return;
+  }
+
+  const concurrency = parseInt(process.env.CACHE_CONCURRENCY || '8', 10);
 
   const progressBar = new cliProgress.SingleBar(
     { stopOnComplete: true },
     cliProgress.Presets.shades_classic
   );
-  progressBar.start(pages.length, 0);
+  progressBar.start(targets.length, 0);
 
   let errorCount = 0;
   const errors = [];
 
+  // 以前はページごとに `npx nx run ...` を子プロセスとして起動していた。
+  // 実際の API 呼び出しよりプロセス起動のほうが重く、しかも CI では
+  // nx のキャッシュが効かないため純粋なオーバーヘッドになっていた。
   await PromisePool.withConcurrency(concurrency)
-    .for(pages)
+    .for(targets)
     .process(async (page) => {
-      return new Promise((resolve) => {
-        const command = `NX_BRANCH=main npx nx run astro-notion-blog:_fetch-notion-blocks ${page.id} ${page.last_edited_time}`;
-        const options = { timeout: 120000 };
-
-        exec(command, options, (err, stdout, stderr) => {
-          if (err) {
-            errorCount++;
-            errors.push({ page: page.slug || page.id, error: err.message });
-            console.error(
-              `Error processing ${page.slug || page.id}: ${err.message}`
-            );
-          }
-          progressBar.increment();
-          return resolve();
-        });
-      });
+      try {
+        await retrieveAndWriteBlockChildren(page.id);
+        manifest[page.id] = page.last_edited_time;
+      } catch (err) {
+        errorCount++;
+        errors.push({ page: page.slug || page.id, error: err.message });
+        // 途中で失敗したページは次回必ず取り直す
+        delete manifest[page.id];
+        console.error(
+          `Error processing ${page.slug || page.id}: ${err.message}`
+        );
+      } finally {
+        progressBar.increment();
+      }
     });
+
+  fs.writeFileSync(MANIFEST_PATH, JSON.stringify(manifest, null, 2));
 
   console.log(
     `\nキャッシュ処理完了: ${pages.length - errorCount}/${pages.length} 成功`

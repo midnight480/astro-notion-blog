@@ -32,6 +32,7 @@ export interface EnvironmentVariables {
   
   // その他
   REQUEST_TIMEOUT_MS?: string
+  OGP_REQUEST_TIMEOUT_MS?: string
 }
 
 // Cloudflare Pages Functions用の環境変数
