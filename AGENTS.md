@@ -4,10 +4,10 @@
 
 このリポジトリは [otoyo/astro-notion-blog](https://github.com/otoyo/astro-notion-blog) の fork です。
 
-| remote | URL | 用途 |
-| --- | --- | --- |
-| `origin` | `midnight480/astro-notion-blog` | 自分のリポジトリ。**作業対象はここだけ** |
-| `upstream` | `otoyo/astro-notion-blog` | fork 元。参照専用 |
+| remote     | URL                             | 用途                                     |
+| ---------- | ------------------------------- | ---------------------------------------- |
+| `origin`   | `midnight480/astro-notion-blog` | 自分のリポジトリ。**作業対象はここだけ** |
+| `upstream` | `otoyo/astro-notion-blog`       | fork 元。参照専用                        |
 
 ## PR・ブランチ運用ルール
 

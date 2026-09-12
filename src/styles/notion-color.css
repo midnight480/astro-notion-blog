@@ -266,10 +266,7 @@ html.dark .code > div,
 html.dark .code > pre,
 html.dark .code > div > pre,
 html.dark .code > div[data-astro-cid-noi6lzum],
-html.dark
-  .code
-  > div[data-astro-cid-noi6lzum]
-  > pre[data-astro-cid-noi6lzum] {
+html.dark .code > div[data-astro-cid-noi6lzum] > pre[data-astro-cid-noi6lzum] {
   background: #222 !important;
 }
 
@@ -282,4 +279,34 @@ html.dark ::selection {
 html:not(.dark) ::selection {
   background: #b3d4fc;
   color: #222;
+}
+
+/*
+ * callout はダークモードでも背景が明るいまま（.callout の既定背景と
+ * .*-background がライト色固定）なので、白文字だと可読性が無くなる。
+ * syntax-coloring.css の `html.dark *:not(pre):not(code):not(.token)`
+ * （詳細度 0,2,3）より強くする必要があるため .callout を重ねて詳細度を上げる。
+ */
+html.dark .callout.callout,
+html.dark .callout.callout p,
+html.dark .callout.callout span,
+html.dark .callout.callout div,
+html.dark .callout.callout li,
+html.dark .callout.callout ul,
+html.dark .callout.callout ol,
+html.dark .callout.callout h1,
+html.dark .callout.callout h2,
+html.dark .callout.callout h3,
+html.dark .callout.callout h4,
+html.dark .callout.callout h5,
+html.dark .callout.callout h6,
+html.dark .callout.callout strong,
+html.dark .callout.callout em,
+html.dark .callout.callout code:not(.code code) {
+  color: #333 !important;
+}
+
+html.dark .callout.callout a,
+html.dark .callout.callout a:hover {
+  color: #0b5fbf !important;
 }
