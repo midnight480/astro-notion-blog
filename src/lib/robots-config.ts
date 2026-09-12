@@ -15,34 +15,31 @@ export interface RobotsConfig {
 
 export const ROBOTS_CONFIG: RobotsConfig = {
   customDomain: 'midnight480.com',
-  
+
   // 許可する検索エンジンボット
-  allowedBots: [
-    'Googlebot',
-    'Bingbot'
-  ],
-  
+  allowedBots: ['Googlebot', 'Bingbot'],
+
   // 禁止するAIボット
   disallowedBots: [
     'GPTBot',
-    'ChatGPT-User', 
+    'ChatGPT-User',
     'CCBot',
     'anthropic-ai',
     'Claude-Web',
     'PerplexityBot',
     'YouBot',
     'Meta-ExternalAgent',
-    'FacebookBot'
+    'FacebookBot',
   ],
-  
+
   // クロール遅延（秒）
   crawlDelay: 1,
-  
+
   // キャッシュ時間（秒）
   cacheMaxAge: {
-    normal: 86400,      // 24時間
-    restrictive: 3600   // 1時間
-  }
+    normal: 86400, // 24時間
+    restrictive: 3600, // 1時間
+  },
 }
 
 /**
@@ -50,32 +47,32 @@ export const ROBOTS_CONFIG: RobotsConfig = {
  */
 export function generateNormalRobotsTxt(config: RobotsConfig): string {
   const { customDomain, allowedBots, disallowedBots, crawlDelay } = config
-  
+
   let robotsTxt = `User-agent: *
 Allow: /
 
 # SEO-friendly crawling
 `
-  
+
   // 許可するボット
-  allowedBots.forEach(bot => {
+  allowedBots.forEach((bot) => {
     robotsTxt += `User-agent: ${bot}
 Allow: /
 
 `
   })
-  
+
   robotsTxt += `# AI Bot restrictions
 `
-  
+
   // 禁止するボット
-  disallowedBots.forEach(bot => {
+  disallowedBots.forEach((bot) => {
     robotsTxt += `User-agent: ${bot}
 Disallow: /
 
 `
   })
-  
+
   robotsTxt += `# Crawl-delay for heavy crawlers
 User-agent: *
 Crawl-delay: ${crawlDelay}
@@ -91,7 +88,7 @@ Sitemap: https://${customDomain}/sitemap.xml`
  */
 export function generateRestrictiveRobotsTxt(config: RobotsConfig): string {
   const { customDomain, disallowedBots } = config
-  
+
   let robotsTxt = `User-agent: *
 Disallow: /
 
@@ -100,15 +97,15 @@ Disallow: /
 
 # AI Bot restrictions (extra strict)
 `
-  
+
   // 禁止するボット（より厳格）
-  disallowedBots.forEach(bot => {
+  disallowedBots.forEach((bot) => {
     robotsTxt += `User-agent: ${bot}
 Disallow: /
 
 `
   })
-  
+
   robotsTxt += `# Canonical sitemap location
 Sitemap: https://${customDomain}/sitemap.xml`
 

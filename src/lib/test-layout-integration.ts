@@ -3,25 +3,28 @@
  * Enhanced Canonical URLとSEOメタタグの統合をテスト
  */
 
-import { generateCanonicalUrl, isProblematicDomain } from './canonical-url-utils'
+import {
+  generateCanonicalUrl,
+  isProblematicDomain,
+} from './canonical-url-utils'
 
 /**
  * Layout.astroで使用されるURL生成のテスト
  */
 function testLayoutUrlGeneration() {
   console.log('🧪 Layout.astro URL生成テスト')
-  
+
   const testPaths = [
     '/',
     '/posts/test-article',
     '/posts/tag/aws',
-    '/privacy-policy'
+    '/privacy-policy',
   ]
-  
-  testPaths.forEach(path => {
+
+  testPaths.forEach((path) => {
     const canonicalUrl = generateCanonicalUrl(path)
     const isProblematic = isProblematicDomain(new URL(canonicalUrl).hostname)
-    
+
     console.log(`  Path: ${path}`)
     console.log(`    Canonical URL: ${canonicalUrl}`)
     console.log(`    Is Problematic: ${isProblematic}`)
@@ -34,11 +37,11 @@ function testLayoutUrlGeneration() {
  */
 function testOgImageGeneration() {
   console.log('🧪 OG画像URL生成テスト')
-  
+
   const customDomain = 'midnight480.com'
   const staticFilePath = '/default-og-image.png'
   const ogImageUrl = `https://${customDomain}${staticFilePath}`
-  
+
   console.log(`  OG Image URL: ${ogImageUrl}`)
   console.log(`  Domain: ${customDomain}`)
   console.log(`  Static Path: ${staticFilePath}`)
@@ -50,25 +53,25 @@ function testOgImageGeneration() {
  */
 function testSeoMetaConsistency() {
   console.log('🧪 SEOメタタグ整合性テスト')
-  
+
   const testCases = [
     {
       title: 'テスト記事',
       description: 'これはテスト記事の説明です',
       path: '/posts/test-article',
-      isArticle: true
+      isArticle: true,
     },
     {
       title: 'ホームページ',
       description: 'サイトの説明',
       path: '/',
-      isArticle: false
-    }
+      isArticle: false,
+    },
   ]
-  
+
   testCases.forEach(({ title, path, isArticle }) => {
     const canonicalUrl = generateCanonicalUrl(path)
-    
+
     console.log(`  Test Case: ${title}`)
     console.log(`    Path: ${path}`)
     console.log(`    Canonical URL: ${canonicalUrl}`)
@@ -83,25 +86,25 @@ function testSeoMetaConsistency() {
  */
 function testDomainConsistency() {
   console.log('🧪 ドメイン統一性検証テスト')
-  
+
   const customDomain = 'midnight480.com'
   const testUrls = [
     generateCanonicalUrl('/'),
     generateCanonicalUrl('/posts/test'),
-    `https://${customDomain}/default-og-image.png`
+    `https://${customDomain}/default-og-image.png`,
   ]
-  
+
   console.log(`  Target Domain: ${customDomain}`)
   console.log('  Generated URLs:')
-  
-  testUrls.forEach(url => {
+
+  testUrls.forEach((url) => {
     const urlObj = new URL(url)
     const isConsistent = urlObj.hostname === customDomain
     const status = isConsistent ? '✅' : '❌'
-    
+
     console.log(`    ${status} ${url}`)
   })
-  
+
   console.log('')
 }
 
@@ -110,19 +113,21 @@ function testDomainConsistency() {
  */
 function testPerformanceOptimizations() {
   console.log('🧪 パフォーマンス最適化検証テスト')
-  
+
   const currentDomain: string = 'astro-notion-blog-cq9.pages.dev'
   const customDomain: string = 'midnight480.com'
-  
+
   console.log('  Preconnect最適化:')
   console.log(`    Current Domain: ${currentDomain}`)
   console.log(`    Custom Domain: ${customDomain}`)
-  console.log(`    Should Preconnect: ${currentDomain === customDomain ? '❌ No' : '✅ Yes'}`)
-  
+  console.log(
+    `    Should Preconnect: ${currentDomain === customDomain ? '❌ No' : '✅ Yes'}`
+  )
+
   console.log('  キャッシュ最適化:')
   console.log('    ✅ Canonical URL components are cacheable')
   console.log('    ✅ SEO meta tags are static per page')
-  
+
   console.log('')
 }
 
@@ -131,13 +136,13 @@ function testPerformanceOptimizations() {
  */
 export function runLayoutIntegrationTests() {
   console.log('🚀 Layout.astro統合テストを開始...\n')
-  
+
   testLayoutUrlGeneration()
   testOgImageGeneration()
   testSeoMetaConsistency()
   testDomainConsistency()
   testPerformanceOptimizations()
-  
+
   console.log('🎉 テスト完了！')
   console.log('\n📋 統合チェックリスト:')
   console.log('  ✅ Enhanced Canonical URLコンポーネント統合')

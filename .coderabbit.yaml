@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
-language: "ja-JP"
+language: 'ja-JP'
 early_access: false
 
 reviews:
-  profile: "chill"
+  profile: 'chill'
   request_changes_workflow: false
   high_level_summary: true
   poem: false
@@ -13,42 +13,42 @@ reviews:
   # レビュー対象から除外するパス（`!` 始まりが除外）
   # path_filters は sparse-checkout にも適用されるため、生成物や巨大な成果物を外す
   path_filters:
-    - "!**/*.lock"
-    - "!**/package-lock.json"
-    - "!**/node_modules/**"
-    - "!**/dist/**"
-    - "!tmp/**"
-    - "!public/notion/**"
+    - '!**/*.lock'
+    - '!**/package-lock.json'
+    - '!**/node_modules/**'
+    - '!**/dist/**'
+    - '!tmp/**'
+    - '!public/notion/**'
 
   path_instructions:
-    - path: "**/*.ts"
+    - path: '**/*.ts'
       instructions: |
         TypeScriptコードのレビュー時は以下を確認してください：
         - strict modeの型安全性
         - 適切なエラーハンドリング
         - セキュリティベストプラクティス（入力検証、SQLインジェクション防止）
 
-    - path: "**/*.tsx"
+    - path: '**/*.tsx'
       instructions: |
         TypeScript/Reactコードのレビュー時は以下を確認してください：
         - strict modeの型安全性
         - 適切なエラーハンドリング
         - hooks の依存配列の正しさ
 
-    - path: "**/*.js"
+    - path: '**/*.js'
       instructions: |
         JavaScriptコードのレビュー時は以下を確認してください：
         - 適切なエラーハンドリング
         - セキュリティベストプラクティス
 
-    - path: "**/*.cjs"
+    - path: '**/*.cjs'
       instructions: |
         ビルド前のキャッシュ取得スクリプトのレビュー時は以下を確認してください：
         - 適切なエラーハンドリング（Notion API のレート制限・リトライ）
         - `forEach` 内の async 関数のような await 漏れ（未処理の Promise）がないか
         - ページ単位で子プロセスを起動していないか（プロセス生成コストがビルド時間を支配する）
 
-    - path: "**/*.astro"
+    - path: '**/*.astro'
       instructions: |
         Astro コンポーネントのレビュー時は以下を確認してください：
         - フロントマター（`---`）内の `await` はビルド時にページごとに直列実行される。
@@ -56,11 +56,11 @@ reviews:
         - `<style>` はスコープされる。グローバルに効かせたい箇所の指定が適切か
         - ユーザー入力・Notion 由来の文字列を `set:html` に渡していないか
 
-    - path: "src/styles/*.module.css"
+    - path: 'src/styles/*.module.css'
       instructions: |
         CSS Modules です。`:global()` を使用してよい。
 
-    - path: "src/styles/*.css"
+    - path: 'src/styles/*.css'
       instructions: |
         グローバル CSS です（CSS Modules ではない）。
         `:global()` は CSS Modules 専用構文で、プレーンな CSS では不正セレクタとして
@@ -68,7 +68,7 @@ reviews:
         例: `:global(html.dark) .foo` ではなく `html.dark .foo` と書く。
         ただし `*.module.css` は対象外。
 
-    - path: ".github/workflows/**"
+    - path: '.github/workflows/**'
       instructions: |
         GitHub Actionsワークフローのレビュー時は以下を確認してください：
         - シークレットの適切な使用
