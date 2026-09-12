@@ -266,10 +266,7 @@ html.dark .code > div,
 html.dark .code > pre,
 html.dark .code > div > pre,
 html.dark .code > div[data-astro-cid-noi6lzum],
-html.dark
-  .code
-  > div[data-astro-cid-noi6lzum]
-  > pre[data-astro-cid-noi6lzum] {
+html.dark .code > div[data-astro-cid-noi6lzum] > pre[data-astro-cid-noi6lzum] {
   background: #222 !important;
 }
 
