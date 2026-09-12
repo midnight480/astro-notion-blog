@@ -405,7 +405,9 @@ export async function getBlock(blockId: string): Promise<Block> {
     {
       retries: numberOfRetry,
       onRetry: (error, attempt) => {
-        console.log(`Retrying getBlock (attempt ${attempt}/${numberOfRetry + 1}): ${blockId}`)
+        console.log(
+          `Retrying getBlock (attempt ${attempt}/${numberOfRetry + 1}): ${blockId}`
+        )
       },
     }
   )
@@ -461,7 +463,9 @@ export async function downloadFile(url: URL) {
           const status = err.response?.status
           // 400系のエラー（400-499）はリトライしない（リクエストが不正）
           if (status && status >= 400 && status < 500 && status !== 429) {
-            console.log(`Skipping download due to client error (${status}): ${url.toString()}`)
+            console.log(
+              `Skipping download due to client error (${status}): ${url.toString()}`
+            )
             bail(err)
             return Promise.resolve()
           }
@@ -481,7 +485,9 @@ export async function downloadFile(url: URL) {
           throw new Error(`HTTP ${status} error: ${url.toString()}`)
         }
         // 400系のエラーはリトライしない
-        console.log(`Skipping download due to HTTP ${status || 'unknown'}: ${url.toString()}`)
+        console.log(
+          `Skipping download due to HTTP ${status || 'unknown'}: ${url.toString()}`
+        )
         return Promise.resolve()
       }
 
@@ -505,7 +511,9 @@ export async function downloadFile(url: URL) {
     {
       retries: numberOfRetry,
       onRetry: (error, attempt) => {
-        console.log(`Retrying download (attempt ${attempt}/${numberOfRetry + 1}): ${url.toString()}`)
+        console.log(
+          `Retrying download (attempt ${attempt}/${numberOfRetry + 1}): ${url.toString()}`
+        )
       },
     }
   ).catch((err) => {

@@ -3,7 +3,9 @@ const path = require('path');
 const { Client } = require('@notionhq/client');
 const cliProgress = require('cli-progress');
 const { PromisePool } = require('@supercharge/promise-pool');
-const { retrieveAndWriteBlockChildren } = require('./retrieve-block-children.cjs');
+const {
+  retrieveAndWriteBlockChildren,
+} = require('./retrieve-block-children.cjs');
 
 const notion = new Client({
   auth: process.env.NOTION_API_SECRET,

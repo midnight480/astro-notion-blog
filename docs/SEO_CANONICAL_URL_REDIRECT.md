@@ -28,6 +28,7 @@ if (url.hostname.includes('.pages.dev')) {
 ```
 
 **特徴**:
+
 - エッジレベルでの高速リダイレクト
 - パスとクエリパラメータの完全保持
 - エラーハンドリング付き
@@ -48,6 +49,7 @@ if (isCloudflarePagesDomain(url.hostname)) {
 ```
 
 **特徴**:
+
 - ドメイン別の適切なクロール設定
 - AIボットの制限
 - キャッシュ最適化
@@ -63,6 +65,7 @@ if (isCloudflarePagesDomain(url.hostname)) {
 ```
 
 **特徴**:
+
 - アクセス元に関係なく常にカスタムドメインを指定
 - パスの正規化
 - 追加のSEOシグナル
@@ -71,30 +74,30 @@ if (isCloudflarePagesDomain(url.hostname)) {
 
 ### Core Components
 
-| ファイル | 説明 |
-|---------|------|
-| `functions/_middleware.ts` | Cloudflare Pages Functions middleware |
-| `src/pages/robots.txt.ts` | 動的robots.txt生成 |
-| `src/components/CanonicalUrl.astro` | Enhanced canonical URLコンポーネント |
-| `src/components/SeoMetaTags.astro` | SEOメタタグ統合コンポーネント |
+| ファイル                            | 説明                                  |
+| ----------------------------------- | ------------------------------------- |
+| `functions/_middleware.ts`          | Cloudflare Pages Functions middleware |
+| `src/pages/robots.txt.ts`           | 動的robots.txt生成                    |
+| `src/components/CanonicalUrl.astro` | Enhanced canonical URLコンポーネント  |
+| `src/components/SeoMetaTags.astro`  | SEOメタタグ統合コンポーネント         |
 
 ### Utility Libraries
 
-| ファイル | 説明 |
-|---------|------|
-| `src/lib/canonical-url-utils.ts` | Canonical URL関連ユーティリティ |
-| `src/lib/robots-config.ts` | Robots.txt設定管理 |
-| `src/lib/seo-validation-tools.ts` | SEO検証ツール |
+| ファイル                          | 説明                            |
+| --------------------------------- | ------------------------------- |
+| `src/lib/canonical-url-utils.ts`  | Canonical URL関連ユーティリティ |
+| `src/lib/robots-config.ts`        | Robots.txt設定管理              |
+| `src/lib/seo-validation-tools.ts` | SEO検証ツール                   |
 
 ### Test Suites
 
-| ファイル | 説明 |
-|---------|------|
-| `src/lib/test-canonical-url.ts` | Canonical URL機能テスト |
-| `src/lib/test-robots.ts` | Robots.txt動的生成テスト |
-| `src/lib/test-redirect-functionality.ts` | リダイレクト機能テスト |
-| `src/lib/test-layout-integration.ts` | Layout.astro統合テスト |
-| `src/lib/test-e2e-integration.ts` | E2E統合テストスイート |
+| ファイル                                 | 説明                     |
+| ---------------------------------------- | ------------------------ |
+| `src/lib/test-canonical-url.ts`          | Canonical URL機能テスト  |
+| `src/lib/test-robots.ts`                 | Robots.txt動的生成テスト |
+| `src/lib/test-redirect-functionality.ts` | リダイレクト機能テスト   |
+| `src/lib/test-layout-integration.ts`     | Layout.astro統合テスト   |
+| `src/lib/test-e2e-integration.ts`        | E2E統合テストスイート    |
 
 ## 使用方法
 
@@ -127,18 +130,18 @@ npm run preview
 
 1. **リダイレクト動作**: `https://astro-notion-blog-cq9.pages.dev/` にアクセスして `https://midnight480.com/` にリダイレクトされることを確認
 2. **Canonical URL**: ページソースで `<link rel="canonical" href="https://midnight480.com/..." />` が設定されていることを確認
-3. **Robots.txt**: 
+3. **Robots.txt**:
    - `https://midnight480.com/robots.txt` - 通常のSEO設定
    - `https://astro-notion-blog-cq9.pages.dev/robots.txt` - 制限的な設定
 
 ## 環境変数
 
-| 変数名 | 説明 | デフォルト値 |
-|--------|------|-------------|
-| `CUSTOM_DOMAIN` | カスタムドメイン | `midnight480.com` |
-| `CF_PAGES` | Cloudflare Pages環境判定 | - |
-| `CF_PAGES_URL` | Cloudflare Pages URL | - |
-| `CF_PAGES_BRANCH` | ブランチ名 | - |
+| 変数名            | 説明                     | デフォルト値      |
+| ----------------- | ------------------------ | ----------------- |
+| `CUSTOM_DOMAIN`   | カスタムドメイン         | `midnight480.com` |
+| `CF_PAGES`        | Cloudflare Pages環境判定 | -                 |
+| `CF_PAGES_URL`    | Cloudflare Pages URL     | -                 |
+| `CF_PAGES_BRANCH` | ブランチ名               | -                 |
 
 ## トラブルシューティング
 
@@ -149,6 +152,7 @@ npm run preview
 **症状**: Cloudflareドメインにアクセスしてもリダイレクトされない
 
 **原因と解決策**:
+
 - `functions/_middleware.ts` がデプロイされていない → ファイルの存在を確認
 - 環境変数 `CUSTOM_DOMAIN` が設定されていない → Cloudflare Pagesの環境変数を確認
 - キャッシュの問題 → ブラウザのキャッシュをクリア
@@ -158,6 +162,7 @@ npm run preview
 **症状**: ページソースでcanonical URLがCloudflareドメインを指している
 
 **原因と解決策**:
+
 - `CanonicalUrl.astro` コンポーネントが使用されていない → Layout.astroの統合を確認
 - `generateCanonicalUrl` 関数の設定問題 → テストスクリプトで動作確認
 
@@ -166,6 +171,7 @@ npm run preview
 **症状**: robots.txtの内容がドメインによって変わらない
 
 **原因と解決策**:
+
 - `src/pages/robots.txt.ts` が正しく配置されていない → ファイルパスを確認
 - ドメイン判定ロジックの問題 → `isCloudflarePagesDomain` 関数をテスト
 

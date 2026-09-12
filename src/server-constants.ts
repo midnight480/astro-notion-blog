@@ -33,12 +33,14 @@ export const ENABLE_LIGHTBOX = import.meta.env.ENABLE_LIGHTBOX
 // コメント機能の設定
 // PUBLIC_ENABLE_COMMENTSが明示的にfalseでない限り、Giscusの環境変数がすべて設定されていれば有効化
 const explicitDisable = import.meta.env.PUBLIC_ENABLE_COMMENTS === 'false'
-const hasGiscusConfig = 
-  import.meta.env.PUBLIC_GISCUS_REPO && 
-  import.meta.env.PUBLIC_GISCUS_REPO_ID && 
+const hasGiscusConfig =
+  import.meta.env.PUBLIC_GISCUS_REPO &&
+  import.meta.env.PUBLIC_GISCUS_REPO_ID &&
   import.meta.env.PUBLIC_GISCUS_CATEGORY_ID
 
-export const ENABLE_COMMENTS = !explicitDisable && (import.meta.env.PUBLIC_ENABLE_COMMENTS === 'true' || hasGiscusConfig)
+export const ENABLE_COMMENTS =
+  !explicitDisable &&
+  (import.meta.env.PUBLIC_ENABLE_COMMENTS === 'true' || hasGiscusConfig)
 export const GISCUS_REPO = import.meta.env.PUBLIC_GISCUS_REPO || ''
 export const GISCUS_REPO_ID = import.meta.env.PUBLIC_GISCUS_REPO_ID || ''
 export const GISCUS_CATEGORY =
@@ -52,8 +54,10 @@ export const GISCUS_EMIT_METADATA =
 
 // Cloudflare Pages環境変数
 export const CF_PAGES = import.meta.env.CF_PAGES || process.env.CF_PAGES || ''
-export const CF_PAGES_URL = import.meta.env.CF_PAGES_URL || process.env.CF_PAGES_URL || ''
-export const CF_PAGES_BRANCH = import.meta.env.CF_PAGES_BRANCH || process.env.CF_PAGES_BRANCH || ''
+export const CF_PAGES_URL =
+  import.meta.env.CF_PAGES_URL || process.env.CF_PAGES_URL || ''
+export const CF_PAGES_BRANCH =
+  import.meta.env.CF_PAGES_BRANCH || process.env.CF_PAGES_BRANCH || ''
 
 // SEO関連の設定
 export const DEFAULT_CUSTOM_DOMAIN = 'midnight480.com'
@@ -62,4 +66,5 @@ export const ENABLE_CANONICAL_REDIRECT = true
 
 // Google AdSense設定
 export const ENABLE_ADSENSE = import.meta.env.ENABLE_ADSENSE === 'true'
-export const PUBLIC_ADSENSE_CLIENT_ID = import.meta.env.PUBLIC_ADSENSE_CLIENT_ID || ''
+export const PUBLIC_ADSENSE_CLIENT_ID =
+  import.meta.env.PUBLIC_ADSENSE_CLIENT_ID || ''

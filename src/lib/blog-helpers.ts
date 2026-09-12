@@ -242,7 +242,10 @@ export const isCircuitSimulatorAppletURL = (url: URL): boolean => {
 }
 
 export const isSpeakerDeckURL = (url: URL): boolean => {
-  if (url.hostname !== 'speakerdeck.com' && url.hostname !== 'www.speakerdeck.com') {
+  if (
+    url.hostname !== 'speakerdeck.com' &&
+    url.hostname !== 'www.speakerdeck.com'
+  ) {
     return false
   }
   return /\/[^/]+\/[^/]+/.test(url.pathname)

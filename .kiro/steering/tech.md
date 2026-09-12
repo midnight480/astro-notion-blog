@@ -1,6 +1,7 @@
 # Technical Stack & Build System
 
 ## Core Technologies
+
 - [Astro](https://astro.build/) - Main framework for static site generation
 - [TypeScript](https://www.typescriptlang.org/) - Programming language
 - [Notion API](https://developers.notion.com/) - Content source
@@ -8,6 +9,7 @@
 - [Node.js](https://nodejs.org/) - Runtime environment (v20.18.1 or higher required)
 
 ## Key Dependencies
+
 - `@notionhq/client` - Official Notion API client
 - `@astrojs/react` - React integration for Astro
 - `@astrojs/rss` - RSS feed generation
@@ -19,11 +21,13 @@
 - `nx` - Build system optimization
 
 ## Development Tools
+
 - ESLint - Code linting
 - Prettier - Code formatting
 - NX Cloud - Build caching and optimization
 
 ## Environment Variables
+
 ```bash
 # Required
 NOTION_API_SECRET=your_notion_api_secret
@@ -45,6 +49,7 @@ PUBLIC_GISCUS_CATEGORY_ID=your_category_id
 ## Common Commands
 
 ### Development
+
 ```bash
 # Install dependencies
 npm install
@@ -60,6 +65,7 @@ npm run lint
 ```
 
 ### Build Commands
+
 ```bash
 # Standard build
 npm run build
@@ -81,6 +87,7 @@ npm run build:skip-cache
 ```
 
 ### Cache Management
+
 ```bash
 # Fetch content cache
 npm run cache:fetch
@@ -93,12 +100,14 @@ npm run _fetch-notion-blocks
 ```
 
 ### Preview
+
 ```bash
 # Preview built site
 npm run preview
 ```
 
 ## Build Optimization
+
 For projects with many articles, use the cached build options. For maximum performance:
 
 1. Set up Nx Cloud with `npx nx g @nrwl/nx-cloud:init`
