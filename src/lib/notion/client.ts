@@ -1,63 +1,63 @@
-import fs, { createWriteStream } from 'node:fs'
-import { pipeline } from 'node:stream/promises'
-import axios from 'axios'
-import sharp from 'sharp'
+import { APIResponseError, Client } from '@notionhq/client'
 import retry from 'async-retry'
 import ExifTransformer from 'exif-be-gone'
+import fs, { createWriteStream } from 'node:fs'
+import { Readable } from 'node:stream'
+import { pipeline } from 'node:stream/promises'
+import sharp from 'sharp'
 import {
-  NOTION_API_SECRET,
   DATABASE_ID,
+  NOTION_API_SECRET,
   NUMBER_OF_POSTS_PER_PAGE,
   REQUEST_TIMEOUT_MS,
 } from '../../server-constants'
-import type { AxiosResponse } from 'axios'
-import type * as responses from './responses'
-import type * as requestParams from './request-params'
 import type {
-  Database,
-  Post,
+  Annotation,
   Block,
-  Paragraph,
+  Bookmark,
+  BulletedListItem,
+  Callout,
+  Code,
+  Column,
+  ColumnList,
+  Database,
+  Embed,
+  Emoji,
+  Equation,
+  File,
+  FileObject,
   Heading1,
   Heading2,
   Heading3,
-  BulletedListItem,
-  NumberedListItem,
-  ToDo,
+  Heading4,
   Image,
-  Code,
-  Quote,
-  Equation,
-  Callout,
-  Embed,
-  Video,
-  File,
-  Bookmark,
   LinkPreview,
+  LinkToPage,
+  Mention,
+  NumberedListItem,
+  Paragraph,
+  Post,
+  Quote,
+  Reference,
+  RichText,
+  SelectProperty,
   SyncedBlock,
   SyncedFrom,
   Table,
-  TableRow,
   TableCell,
-  Toggle,
-  ColumnList,
-  Column,
   TableOfContents,
-  RichText,
+  TableRow,
   Text,
-  Annotation,
-  SelectProperty,
-  Emoji,
-  FileObject,
-  LinkToPage,
-  Mention,
-  Reference,
+  ToDo,
+  Toggle,
+  Video,
 } from '../interfaces'
-import { Client, APIResponseError } from '@notionhq/client'
+import type * as requestParams from './request-params'
+import type * as responses from './responses'
 
 const client = new Client({
   auth: NOTION_API_SECRET,
-  notionVersion: '2025-09-03',
+  notionVersion: '2026-03-11',
 })
 
 let postsCache: Post[] | null = null
@@ -146,7 +146,7 @@ export async function getAllPosts(): Promise<Post[]> {
             ],
             page_size: 100,
             start_cursor: startCursor,
-          })) as responses.QueryDatabaseResponse
+          })) as responses.QueryDataSourceResponse
         } catch (error: unknown) {
           if (error instanceof APIResponseError) {
             if (error.status && error.status >= 400 && error.status < 500) {
@@ -271,11 +271,61 @@ export async function getNumberOfPagesByTag(tagName: string): Promise<number> {
   )
 }
 
+let cacheFileIndex: Map<string, string> | null = null
+
+function _buildCacheFileIndex(): Map<string, string> {
+  const index = new Map<string, string>()
+  const mtimes = new Map<string, number>()
+
+  if (!fs.existsSync('tmp')) {
+    return index
+  }
+
+  const addFile = (filePath: string, fileName: string) => {
+    if (!fileName.endsWith('.json')) {
+      return
+    }
+    const blockId = fileName.slice(0, -'.json'.length)
+    const mtime = fs.statSync(filePath).mtimeMs
+    if (!index.has(blockId) || mtime > (mtimes.get(blockId) || 0)) {
+      index.set(blockId, filePath)
+      mtimes.set(blockId, mtime)
+    }
+  }
+
+  fs.readdirSync('tmp', { withFileTypes: true }).forEach((entry) => {
+    const entryPath = `tmp/${entry.name}`
+    if (entry.isDirectory()) {
+      fs.readdirSync(entryPath).forEach((fileName) =>
+        addFile(`${entryPath}/${fileName}`, fileName)
+      )
+    } else if (entry.isFile()) {
+      addFile(entryPath, entry.name)
+    }
+  })
+
+  return index
+}
+
+function _readCachedBlockChildren(
+  blockId: string
+): responses.BlockObject[] | null {
+  if (cacheFileIndex === null) {
+    cacheFileIndex = _buildCacheFileIndex()
+  }
+  const filePath = cacheFileIndex.get(blockId)
+  if (!filePath) {
+    return null
+  }
+  return JSON.parse(fs.readFileSync(filePath, 'utf-8'))
+}
+
 export async function getAllBlocksByBlockId(blockId: string): Promise<Block[]> {
   let results: responses.BlockObject[] = []
 
-  if (fs.existsSync(`tmp/${blockId}.json`)) {
-    results = JSON.parse(fs.readFileSync(`tmp/${blockId}.json`, 'utf-8'))
+  const cachedResults = _readCachedBlockChildren(blockId)
+  if (cachedResults) {
+    results = cachedResults
   } else {
     const params: requestParams.RetrieveBlockChildren = {
       block_id: blockId,
@@ -363,6 +413,12 @@ export async function getAllBlocksByBlockId(blockId: string): Promise<Block[]> {
       block.HasChildren
     ) {
       block.Heading3.Children = await getAllBlocksByBlockId(block.Id)
+    } else if (
+      block.Type === 'heading_4' &&
+      block.Heading4 &&
+      block.HasChildren
+    ) {
+      block.Heading4.Children = await getAllBlocksByBlockId(block.Id)
     } else if (block.Type === 'quote' && block.Quote && block.HasChildren) {
       block.Quote.Children = await getAllBlocksByBlockId(block.Id)
     } else if (block.Type === 'callout' && block.Callout && block.HasChildren) {
@@ -436,7 +492,7 @@ export async function getAllTags(): Promise<SelectProperty[]> {
 export async function downloadFile(url: URL) {
   const dir = './public/notion/' + url.pathname.split('/').slice(-2)[0]
   if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir)
+    fs.mkdirSync(dir, { recursive: true })
   }
 
   const filename = decodeURIComponent(url.pathname.split('/').slice(-1)[0])
@@ -449,59 +505,44 @@ export async function downloadFile(url: URL) {
 
   return retry(
     async (bail) => {
-      let res!: AxiosResponse
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
+
+      let res!: Response
       try {
-        res = await axios({
-          method: 'get',
-          url: url.toString(),
-          timeout: REQUEST_TIMEOUT_MS,
-          responseType: 'stream',
+        res = await fetch(url.toString(), {
+          method: 'GET',
+          signal: controller.signal,
         })
-      } catch (err: unknown) {
-        // AxiosErrorの場合、ステータスコードを確認
-        if (axios.isAxiosError(err)) {
-          const status = err.response?.status
-          // 400系のエラー（400-499）はリトライしない（リクエストが不正）
-          if (status && status >= 400 && status < 500 && status !== 429) {
-            console.log(
-              `Skipping download due to client error (${status}): ${url.toString()}`
-            )
-            bail(err)
-            return Promise.resolve()
-          }
-          // 429 (Rate Limit) や 500系はリトライ
-          if (status === 429 || (status && status >= 500)) {
-            throw err
-          }
-        }
-        // その他のエラーもリトライ
-        throw err
+      } finally {
+        clearTimeout(timeoutId)
       }
 
-      if (!res || res.status !== 200) {
-        // 200以外のステータスコードの場合
-        const status = res?.status
-        if (status === 429 || (status && status >= 500 && status < 600)) {
+      if (res.status !== 200 || !res.body) {
+        const status = res.status
+        // 429 (Rate Limit) や 500系はリトライ
+        if (status === 429 || (status >= 500 && status < 600)) {
           throw new Error(`HTTP ${status} error: ${url.toString()}`)
         }
-        // 400系のエラーはリトライしない
+        // 400系のエラーはリトライしない（リクエストが不正）
         console.log(
-          `Skipping download due to HTTP ${status || 'unknown'}: ${url.toString()}`
+          `Skipping download due to HTTP ${status}: ${url.toString()}`
         )
+        bail(new Error(`HTTP ${status}: ${url.toString()}`))
         return Promise.resolve()
       }
 
       const writeStream = createWriteStream(filepath)
       const rotate = sharp().rotate()
 
-      let stream = res.data
+      let stream = Readable.fromWeb(res.body as any) // eslint-disable-line @typescript-eslint/no-explicit-any
 
-      if (res.headers['content-type'] === 'image/jpeg') {
+      if (res.headers.get('content-type') === 'image/jpeg') {
         stream = stream.pipe(rotate)
       }
 
       try {
-        return pipeline(stream, new ExifTransformer(), writeStream)
+        return await pipeline(stream, new ExifTransformer(), writeStream)
       } catch (err) {
         console.log(`Pipeline error for ${url.toString()}:`, err)
         writeStream.end()
@@ -552,31 +593,39 @@ export async function getDatabase(): Promise<Database> {
     }
   )
 
+  const dataSource = await _getDataSource(res.data_sources?.[0]?.id || '')
+
   let icon: FileObject | Emoji | null = null
-  if (res.icon) {
-    if (res.icon.type === 'emoji' && 'emoji' in res.icon) {
+  if (dataSource.icon) {
+    if (dataSource.icon.type === 'emoji' && 'emoji' in dataSource.icon) {
       icon = {
-        Type: res.icon.type,
-        Emoji: res.icon.emoji,
+        Type: dataSource.icon.type,
+        Emoji: dataSource.icon.emoji,
       }
-    } else if (res.icon.type === 'external' && 'external' in res.icon) {
+    } else if (
+      dataSource.icon.type === 'external' &&
+      'external' in dataSource.icon
+    ) {
       icon = {
-        Type: res.icon.type,
-        Url: res.icon.external?.url || '',
+        Type: dataSource.icon.type,
+        Url: dataSource.icon.external?.url || '',
       }
-    } else if (res.icon.type === 'file' && 'file' in res.icon) {
+    } else if (dataSource.icon.type === 'file' && 'file' in dataSource.icon) {
       icon = {
-        Type: res.icon.type,
-        Url: res.icon.file?.url || '',
+        Type: dataSource.icon.type,
+        Url: dataSource.icon.file?.url || '',
       }
     }
   }
 
   let cover: FileObject | null = null
-  if (res.cover) {
+  if (dataSource.cover) {
     cover = {
-      Type: res.cover.type,
-      Url: res.cover.external?.url || res.cover?.file?.url || '',
+      Type: dataSource.cover.type,
+      Url:
+        ('external' in dataSource.cover && dataSource.cover.external?.url) ||
+        ('file' in dataSource.cover && dataSource.cover.file?.url) ||
+        '',
     }
   }
 
@@ -591,6 +640,34 @@ export async function getDatabase(): Promise<Database> {
 
   dbCache = database
   return database
+}
+
+export async function _getDataSource(
+  data_source_id: string
+): Promise<responses.DataSourceObject> {
+  const params: requestParams.RetrieveDataSource = {
+    data_source_id: data_source_id,
+  }
+
+  return await retry(
+    async (bail) => {
+      try {
+        return (await client.dataSources.retrieve(
+          params as any // eslint-disable-line @typescript-eslint/no-explicit-any
+        )) as responses.RetrieveDataSourceResponse
+      } catch (error: unknown) {
+        if (error instanceof APIResponseError) {
+          if (error.status && error.status >= 400 && error.status < 500) {
+            bail(error)
+          }
+        }
+        throw error
+      }
+    },
+    {
+      retries: numberOfRetry,
+    }
+  )
 }
 
 function _buildBlock(blockObject: responses.BlockObject): Block {
@@ -638,6 +715,16 @@ function _buildBlock(blockObject: responses.BlockObject): Block {
           IsToggleable: blockObject.heading_3.is_toggleable,
         }
         block.Heading3 = heading3
+      }
+      break
+    case 'heading_4':
+      if (blockObject.heading_4) {
+        const heading4: Heading4 = {
+          RichTexts: blockObject.heading_4.rich_text.map(_buildRichText),
+          Color: blockObject.heading_4.color,
+          IsToggleable: blockObject.heading_4.is_toggleable,
+        }
+        block.Heading4 = heading4
       }
       break
     case 'bulleted_list_item':
@@ -881,8 +968,9 @@ function _buildBlock(blockObject: responses.BlockObject): Block {
 async function _getTableRows(blockId: string): Promise<TableRow[]> {
   let results: responses.BlockObject[] = []
 
-  if (fs.existsSync(`tmp/${blockId}.json`)) {
-    results = JSON.parse(fs.readFileSync(`tmp/${blockId}.json`, 'utf-8'))
+  const cachedResults = _readCachedBlockChildren(blockId)
+  if (cachedResults) {
+    results = cachedResults
   } else {
     const params: requestParams.RetrieveBlockChildren = {
       block_id: blockId,
@@ -946,8 +1034,9 @@ async function _getTableRows(blockId: string): Promise<TableRow[]> {
 async function _getColumns(blockId: string): Promise<Column[]> {
   let results: responses.BlockObject[] = []
 
-  if (fs.existsSync(`tmp/${blockId}.json`)) {
-    results = JSON.parse(fs.readFileSync(`tmp/${blockId}.json`, 'utf-8'))
+  const cachedResults = _readCachedBlockChildren(blockId)
+  if (cachedResults) {
+    results = cachedResults
   } else {
     const params: requestParams.RetrieveBlockChildren = {
       block_id: blockId,
