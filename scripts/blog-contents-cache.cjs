@@ -9,7 +9,7 @@ const {
 
 const notion = new Client({
   auth: process.env.NOTION_API_SECRET,
-  notionVersion: '2025-09-03',
+  notionVersion: '2026-03-11',
 });
 
 const CACHE_DIR = 'tmp';

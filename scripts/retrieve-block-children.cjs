@@ -4,7 +4,7 @@ const { Client } = require('@notionhq/client');
 
 const notion = new Client({
   auth: process.env.NOTION_API_SECRET,
-  notionVersion: '2025-09-03',
+  notionVersion: '2026-03-11',
 });
 
 // Notion API のレート制限は「平均 3 リクエスト/秒」。
