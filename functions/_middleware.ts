@@ -12,8 +12,8 @@ export const onRequest: PagesFunction<Env> = async (context) => {
     const { request, env, next } = context
     const url = new URL(request.url)
 
-    // カスタムドメインを環境変数から取得、フォールバックとして midnight480.com を使用
-    const customDomain = env.CUSTOM_DOMAIN || 'midnight480.com'
+    // カスタムドメインを環境変数から取得、フォールバックとして blog.midnight480.com を使用
+    const customDomain = env.CUSTOM_DOMAIN || 'blog.midnight480.com'
 
     // Cloudflareの独自ドメイン（*.pages.dev）からのアクセスを検出
     if (url.hostname.includes('.pages.dev')) {

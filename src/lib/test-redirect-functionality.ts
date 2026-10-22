@@ -19,7 +19,7 @@ async function simulateRedirectMiddleware(
   env: CloudflareEnv
 ): Promise<Response> {
   const url = new URL(request.url)
-  const customDomain = env.CUSTOM_DOMAIN || 'midnight480.com'
+  const customDomain = env.CUSTOM_DOMAIN || 'blog.midnight480.com'
 
   // Cloudflareの独自ドメインからのアクセスを検出
   if (url.hostname.includes('.pages.dev')) {
@@ -44,23 +44,23 @@ async function testBasicRedirectFunctionality() {
       name: 'Cloudflareドメインからのリダイレクト',
       url: 'https://astro-notion-blog-cq9.pages.dev/',
       expectedStatus: 301,
-      expectedLocation: 'https://midnight480.com/',
+      expectedLocation: 'https://blog.midnight480.com/',
     },
     {
       name: 'パス付きリダイレクト',
       url: 'https://astro-notion-blog-cq9.pages.dev/posts/test',
       expectedStatus: 301,
-      expectedLocation: 'https://midnight480.com/posts/test',
+      expectedLocation: 'https://blog.midnight480.com/posts/test',
     },
     {
       name: 'クエリパラメータ付きリダイレクト',
       url: 'https://astro-notion-blog-cq9.pages.dev/posts/test?utm_source=twitter',
       expectedStatus: 301,
-      expectedLocation: 'https://midnight480.com/posts/test?utm_source=twitter',
+      expectedLocation: 'https://blog.midnight480.com/posts/test?utm_source=twitter',
     },
     {
       name: 'カスタムドメインは通常処理',
-      url: 'https://midnight480.com/posts/test',
+      url: 'https://blog.midnight480.com/posts/test',
       expectedStatus: 200,
       expectedLocation: null,
     },
@@ -69,7 +69,7 @@ async function testBasicRedirectFunctionality() {
   for (const testCase of testCases) {
     const request = createMockRequest(testCase.url)
     const response = await simulateRedirectMiddleware(request, {
-      CUSTOM_DOMAIN: 'midnight480.com',
+      CUSTOM_DOMAIN: 'blog.midnight480.com',
     })
 
     const statusMatch = response.status === testCase.expectedStatus
@@ -104,25 +104,25 @@ function testUrlGenerationAndParameterPreservation() {
   const testCases = [
     {
       original: 'https://astro-notion-blog-cq9.pages.dev/',
-      expected: 'https://midnight480.com/',
+      expected: 'https://blog.midnight480.com/',
     },
     {
       original: 'https://astro-notion-blog-cq9.pages.dev/posts/test',
-      expected: 'https://midnight480.com/posts/test',
+      expected: 'https://blog.midnight480.com/posts/test',
     },
     {
       original: 'https://astro-notion-blog-cq9.pages.dev/posts/test?a=1&b=2',
-      expected: 'https://midnight480.com/posts/test?a=1&b=2',
+      expected: 'https://blog.midnight480.com/posts/test?a=1&b=2',
     },
     {
       original: 'https://astro-notion-blog-cq9.pages.dev/posts/test#section',
-      expected: 'https://midnight480.com/posts/test#section',
+      expected: 'https://blog.midnight480.com/posts/test#section',
     },
   ]
 
   testCases.forEach(({ original, expected }) => {
     const redirectUrl = new URL(original)
-    redirectUrl.hostname = 'midnight480.com'
+    redirectUrl.hostname = 'blog.midnight480.com'
     redirectUrl.protocol = 'https:'
 
     const result = redirectUrl.toString()
@@ -148,7 +148,7 @@ function testDomainDetectionLogic() {
     { hostname: 'astro-notion-blog-cq9.pages.dev', shouldRedirect: true },
     { hostname: 'my-site.pages.dev', shouldRedirect: true },
     { hostname: 'test-123.pages.dev', shouldRedirect: true },
-    { hostname: 'midnight480.com', shouldRedirect: false },
+    { hostname: 'blog.midnight480.com', shouldRedirect: false },
     { hostname: 'www.midnight480.com', shouldRedirect: false },
     { hostname: 'example.com', shouldRedirect: false },
     { hostname: 'subdomain.example.com', shouldRedirect: false },
@@ -205,7 +205,7 @@ async function testErrorHandling() {
 
       const response = await simulateRedirectMiddleware(
         request,
-        testCase.env || { CUSTOM_DOMAIN: 'midnight480.com' }
+        testCase.env || { CUSTOM_DOMAIN: 'blog.midnight480.com' }
       )
 
       const status =
@@ -233,7 +233,7 @@ async function testPerformance() {
   for (let i = 0; i < iterations; i++) {
     const request = createMockRequest(testUrl)
     await simulateRedirectMiddleware(request, {
-      CUSTOM_DOMAIN: 'midnight480.com',
+      CUSTOM_DOMAIN: 'blog.midnight480.com',
     })
   }
 

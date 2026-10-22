@@ -211,7 +211,7 @@ export function validateRedirectChain(
     // Cloudflareドメインの場合のシミュレーション
     if (url.hostname.includes('.pages.dev')) {
       const redirectUrl = new URL(originalUrl)
-      redirectUrl.hostname = 'midnight480.com'
+      redirectUrl.hostname = 'blog.midnight480.com'
       redirectUrl.protocol = 'https:'
 
       redirectChain.push({

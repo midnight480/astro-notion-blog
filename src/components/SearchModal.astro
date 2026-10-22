@@ -253,7 +253,7 @@
     }
 
     async function fetchRSS() {
-      const res = await fetch('https://midnight480.com/feed')
+      const res = await fetch('/feed')
       if (res.status !== 200) {
         console.log(res.status)
         throw new Error('Failed to fetch RSS feed')

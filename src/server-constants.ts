@@ -67,7 +67,7 @@ export const CF_PAGES_BRANCH =
   import.meta.env?.CF_PAGES_BRANCH || process.env.CF_PAGES_BRANCH || ''
 
 // SEO関連の設定
-export const DEFAULT_CUSTOM_DOMAIN = 'midnight480.com'
+export const DEFAULT_CUSTOM_DOMAIN = 'blog.midnight480.com'
 export const FORCE_HTTPS = true
 export const ENABLE_CANONICAL_REDIRECT = true
 

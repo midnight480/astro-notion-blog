@@ -18,7 +18,7 @@ function testDomainDetection() {
   const testCases = [
     { hostname: 'astro-notion-blog-cq9.pages.dev', expected: true },
     { hostname: 'my-site.pages.dev', expected: true },
-    { hostname: 'midnight480.com', expected: false },
+    { hostname: 'blog.midnight480.com', expected: false },
     { hostname: 'www.midnight480.com', expected: false },
     { hostname: 'example.com', expected: false },
   ]

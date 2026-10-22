@@ -71,9 +71,9 @@ async function runComprehensiveSeoValidationTest() {
     'https://astro-notion-blog-cq9.pages.dev/',
     'https://astro-notion-blog-cq9.pages.dev/posts/test-article',
     'https://astro-notion-blog-cq9.pages.dev/posts/tag/aws',
-    'https://midnight480.com/',
-    'https://midnight480.com/posts/test-article',
-    'https://midnight480.com/privacy-policy',
+    'https://blog.midnight480.com/',
+    'https://blog.midnight480.com/posts/test-article',
+    'https://blog.midnight480.com/privacy-policy',
   ]
 
   console.log(`  検証対象URL数: ${testUrls.length}`)

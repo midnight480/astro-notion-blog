@@ -38,7 +38,7 @@ function testLayoutUrlGeneration() {
 function testOgImageGeneration() {
   console.log('🧪 OG画像URL生成テスト')
 
-  const customDomain = 'midnight480.com'
+  const customDomain = 'blog.midnight480.com'
   const staticFilePath = '/default-og-image.png'
   const ogImageUrl = `https://${customDomain}${staticFilePath}`
 
@@ -87,7 +87,7 @@ function testSeoMetaConsistency() {
 function testDomainConsistency() {
   console.log('🧪 ドメイン統一性検証テスト')
 
-  const customDomain = 'midnight480.com'
+  const customDomain = 'blog.midnight480.com'
   const testUrls = [
     generateCanonicalUrl('/'),
     generateCanonicalUrl('/posts/test'),
@@ -115,7 +115,7 @@ function testPerformanceOptimizations() {
   console.log('🧪 パフォーマンス最適化検証テスト')
 
   const currentDomain: string = 'astro-notion-blog-cq9.pages.dev'
-  const customDomain: string = 'midnight480.com'
+  const customDomain: string = 'blog.midnight480.com'
 
   console.log('  Preconnect最適化:')
   console.log(`    Current Domain: ${currentDomain}`)

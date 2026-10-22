@@ -1,5 +1,5 @@
 ---
-import { PUBLIC_GA_TRACKING_ID, ENABLE_LIGHTBOX, ENABLE_ADSENSE, PUBLIC_ADSENSE_CLIENT_ID } from '../server-constants.ts'
+import { PUBLIC_GA_TRACKING_ID, ENABLE_LIGHTBOX, ENABLE_ADSENSE, PUBLIC_ADSENSE_CLIENT_ID, CUSTOM_DOMAIN, DEFAULT_CUSTOM_DOMAIN } from '../server-constants.ts'
 import { getDatabase } from '../lib/notion/client.ts'
 import { getStaticFilePath, filePath } from '../lib/blog-helpers.ts'
 import '../styles/syntax-coloring.css'
@@ -35,7 +35,7 @@ const canonicalURL = generateCanonicalUrl(path)
 const siteURL = canonicalURL // Use canonical URL for consistency
 
 // Generate OG image URL using custom domain
-const customDomain = 'midnight480.com'
+const customDomain = CUSTOM_DOMAIN || DEFAULT_CUSTOM_DOMAIN
 const siteOGImage = `https://${customDomain}${getStaticFilePath('/default-og-image.png')}`
 
 let coverImageURL: string

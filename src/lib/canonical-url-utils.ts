@@ -12,7 +12,7 @@ export interface CanonicalUrlConfig {
 }
 
 export const DEFAULT_CANONICAL_CONFIG: CanonicalUrlConfig = {
-  customDomain: CUSTOM_DOMAIN || 'midnight480.com',
+  customDomain: CUSTOM_DOMAIN || 'blog.midnight480.com',
   forceHttps: true,
   preserveQuery: false, // SEOのためクエリパラメータは除外
   normalizeTrailingSlash: true,

@@ -41,4 +41,4 @@ User-agent: *
 Crawl-delay: 1
 
 # Sitemap location
-Sitemap: https://midnight480.com/sitemap.xml
+Sitemap: https://blog.midnight480.com/sitemap.xml
