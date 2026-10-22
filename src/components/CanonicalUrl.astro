@@ -15,7 +15,7 @@ export interface Props {
 const { path, customDomain } = Astro.props
 
 // カスタムドメインの決定（優先順位: props > 環境変数 > デフォルト）
-const resolvedCustomDomain = customDomain || CUSTOM_DOMAIN || 'midnight480.com'
+const resolvedCustomDomain = customDomain || CUSTOM_DOMAIN || 'blog.midnight480.com'
 
 // パスの正規化（先頭に/がない場合は追加）
 const normalizedPath = path.startsWith('/') ? path : `/${path}`

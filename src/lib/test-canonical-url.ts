@@ -21,11 +21,11 @@ function testCanonicalUrlGeneration() {
   console.log('🧪 Canonical URL生成テスト')
 
   const testCases = [
-    { path: '/', expected: 'https://midnight480.com/' },
-    { path: '/posts/test', expected: 'https://midnight480.com/posts/test' },
-    { path: '/posts/test/', expected: 'https://midnight480.com/posts/test' },
-    { path: 'posts/test', expected: 'https://midnight480.com/posts/test' },
-    { path: '/posts//test/', expected: 'https://midnight480.com/posts/test' },
+    { path: '/', expected: 'https://blog.midnight480.com/' },
+    { path: '/posts/test', expected: 'https://blog.midnight480.com/posts/test' },
+    { path: '/posts/test/', expected: 'https://blog.midnight480.com/posts/test' },
+    { path: 'posts/test', expected: 'https://blog.midnight480.com/posts/test' },
+    { path: '/posts//test/', expected: 'https://blog.midnight480.com/posts/test' },
   ]
 
   testCases.forEach(({ path, expected }) => {
@@ -48,7 +48,7 @@ function testDomainDetection() {
 
   const testCases = [
     {
-      hostname: 'midnight480.com',
+      hostname: 'blog.midnight480.com',
       isCustom: true,
       isCloudflare: false,
       isProblematic: false,
@@ -119,12 +119,12 @@ function testUrlNormalization() {
 
   const queryTests = [
     {
-      input: 'https://midnight480.com/posts/test?utm_source=twitter',
-      expected: 'https://midnight480.com/posts/test',
+      input: 'https://blog.midnight480.com/posts/test?utm_source=twitter',
+      expected: 'https://blog.midnight480.com/posts/test',
     },
     {
-      input: 'https://midnight480.com/posts/test?a=1&b=2',
-      expected: 'https://midnight480.com/posts/test',
+      input: 'https://blog.midnight480.com/posts/test?a=1&b=2',
+      expected: 'https://blog.midnight480.com/posts/test',
     },
   ]
 
@@ -145,9 +145,9 @@ function testUrlValidation() {
   console.log('🧪 URL検証テスト')
 
   const testCases = [
-    { url: 'https://midnight480.com/', expected: true },
-    { url: 'https://midnight480.com/posts/test', expected: true },
-    { url: 'http://midnight480.com/', expected: false }, // HTTPは無効
+    { url: 'https://blog.midnight480.com/', expected: true },
+    { url: 'https://blog.midnight480.com/posts/test', expected: true },
+    { url: 'http://blog.midnight480.com/', expected: false }, // HTTPは無効
     { url: 'https://astro-notion-blog-cq9.pages.dev/', expected: false }, // Cloudflareドメインは無効
     { url: 'invalid-url', expected: false },
   ]

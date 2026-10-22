@@ -4,7 +4,7 @@ import { getPostLink } from '../lib/blog-helpers'
 
 export async function GET() {
   const [posts, database] = await Promise.all([getAllPosts(), getDatabase()])
-  const siteUrl = 'https://midnight480.com'
+  const siteUrl = 'https://blog.midnight480.com'
 
   return rss({
     title: database.Title,

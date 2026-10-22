@@ -13,7 +13,7 @@ function createMockRequest(url) {
 }
 
 // テスト用のモックContext作成
-function createMockContext(request, customDomain = 'midnight480.com') {
+function createMockContext(request, customDomain = 'blog.midnight480.com') {
   return {
     request,
     env: { CUSTOM_DOMAIN: customDomain },
@@ -55,7 +55,7 @@ async function runTests() {
 
   // テストケース2: カスタムドメインでの通常処理
   console.log('\nTest 2: カスタムドメインでの通常処理');
-  const request2 = createMockRequest('https://midnight480.com/posts/test');
+  const request2 = createMockRequest('https://blog.midnight480.com/posts/test');
   const context2 = createMockContext(request2);
 
   console.log('✅ カスタムドメインでは通常処理が継続されます');

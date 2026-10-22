@@ -14,7 +14,7 @@ export interface RobotsConfig {
 }
 
 export const ROBOTS_CONFIG: RobotsConfig = {
-  customDomain: 'midnight480.com',
+  customDomain: 'blog.midnight480.com',
 
   // 許可する検索エンジンボット
   allowedBots: ['Googlebot', 'Bingbot'],

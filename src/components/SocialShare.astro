@@ -9,7 +9,7 @@ export interface Props {
 
 const { title, url } = Astro.props
 
-// URLを midnight480.com ドメインに強制変換
+// URLを CUSTOM_DOMAIN（blog.midnight480.com）に強制変換
 const forceCustomDomain = (originalUrl: string): string => {
   if (CUSTOM_DOMAIN) {
     try {

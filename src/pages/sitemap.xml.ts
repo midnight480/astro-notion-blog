@@ -6,7 +6,7 @@ export const GET: APIRoute = async ({ site }) => {
   const posts = await getAllPosts()
   const tags = await getAllTags()
 
-  const baseUrl = site?.toString() || 'https://midnight480.com'
+  const baseUrl = site?.toString() || 'https://blog.midnight480.com'
 
   // Remove trailing slash
   const cleanBaseUrl = baseUrl.replace(/\/$/, '')
