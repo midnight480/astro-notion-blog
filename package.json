@@ -68,7 +68,7 @@
     "eslint": "^10.2.0",
     "eslint-plugin-astro": "^2.0.0",
     "globals": "^17.3.0",
-    "nx": "^23.3.0",
+    "nx": "^24.0.3",
     "tsx": "^4.22.0"
   },
   "overrides": {
